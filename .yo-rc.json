@@ -1,0 +1,25 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "quicksparks-hub",
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "QuickSparksHub",
+    "componentDescription": "QuickSparks Badge Dashboard for Republic Bank",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.20.8",
+    "sdksVersions": {
+      "@microsoft/microsoft-graph-client": "3.0.2",
+      "@microsoft/teams-js": "2.24.0"
+    },
+    "version": "1.20.0",
+    "libraryName": "quicksparks-hub",
+    "libraryId": "e6bbca8b-0694-4579-b713-65cc0e37c985",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionShortDescription": "quicksparks-hub description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false
+  }
+}

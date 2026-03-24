@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "quicksparks-hub-client-side-solution",
+    "id": "e6bbca8b-0694-4579-b713-65cc0e37c985",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.20.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "quicksparks-hub description"
+      },
+      "longDescription": {
+        "default": "quicksparks-hub description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "quicksparks-hub Feature",
+        "description": "The feature that activates elements of the quicksparks-hub solution.",
+        "id": "56ad3175-f6ac-406b-8a1a-328e5ba87466",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/quicksparks-hub.sppkg"
+  }
+}

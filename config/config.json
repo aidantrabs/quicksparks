@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "quick-sparks-hub-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/quickSparksHub/QuickSparksHubWebPart.js",
+          "manifest": "./src/webparts/quickSparksHub/QuickSparksHubWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "QuickSparksHubWebPartStrings": "lib/webparts/quickSparksHub/loc/{locale}.js"
+  }
+}
