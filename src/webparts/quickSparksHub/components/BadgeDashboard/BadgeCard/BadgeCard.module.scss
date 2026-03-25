@@ -1,0 +1,98 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--qs-spacing-base);
+    background: var(--qs-color-surface);
+    border-radius: var(--qs-radius-md);
+    box-shadow: var(--qs-shadow-card);
+    transition: transform var(--qs-transition-default), box-shadow var(--qs-transition-default);
+    text-align: center;
+    font-family: var(--qs-font-family);
+}
+
+.card:hover {
+    transform: scale(1.03);
+    box-shadow: var(--qs-shadow-card-hover);
+}
+
+.card:focus-within {
+    outline: 2px solid var(--qs-color-primary);
+    outline-offset: 2px;
+}
+
+.badgeImage {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: var(--qs-radius-full);
+    margin-bottom: var(--qs-spacing-md);
+}
+
+.title {
+    font-size: var(--qs-font-size-caption);
+    font-weight: var(--qs-font-weight-semibold);
+    color: var(--qs-color-text-primary);
+    margin: 0 0 var(--qs-spacing-xs);
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.date {
+    font-size: var(--qs-font-size-caption);
+    color: var(--qs-color-accent-magenta);
+    font-weight: var(--qs-font-weight-semibold);
+}
+
+.category {
+    font-size: 11px;
+    color: var(--qs-color-text-muted);
+    margin-top: var(--qs-spacing-xs);
+    line-height: 1.2;
+}
+
+.locked {
+    composes: card;
+}
+
+.locked:hover {
+    transform: scale(1.02);
+}
+
+.lockedImage {
+    composes: badgeImage;
+    filter: grayscale(1) opacity(0.4);
+    transition: filter var(--qs-transition-default);
+}
+
+.locked:hover .lockedImage {
+    filter: grayscale(1) opacity(0.6);
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+.lockLabel {
+    font-size: var(--qs-font-size-caption);
+    color: var(--qs-color-text-muted);
+    font-weight: var(--qs-font-weight-semibold);
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+@media (max-width: 480px) {
+    .badgeImage,
+    .lockedImage {
+        width: 80px;
+        height: 80px;
+    }
+}
