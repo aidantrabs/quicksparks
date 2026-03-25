@@ -10,6 +10,11 @@
     animation: fadeIn var(--qs-transition-slow) forwards;
 }
 
+.row:focus-visible {
+    outline: 2px solid var(--qs-color-primary);
+    outline-offset: 2px;
+}
+
 .rank {
     min-width: 32px;
     font-size: var(--qs-font-size-h2);
