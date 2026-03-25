@@ -1,0 +1,23 @@
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--qs-spacing-4xl) var(--qs-spacing-xl);
+    text-align: center;
+    font-family: var(--qs-font-family);
+}
+
+.title {
+    font-size: var(--qs-font-size-h3);
+    font-weight: var(--qs-font-weight-semibold);
+    color: var(--qs-color-text-primary);
+    margin: 0 0 var(--qs-spacing-sm);
+}
+
+.message {
+    font-size: var(--qs-font-size-body);
+    color: var(--qs-color-text-muted);
+    margin: 0;
+    max-width: 360px;
+}
