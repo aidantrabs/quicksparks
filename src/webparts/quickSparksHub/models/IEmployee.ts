@@ -1,5 +1,7 @@
 export interface IEmployee {
+    employeeNumber: string;
     email: string;
     displayName: string;
-    division: string;
+    branchUnit: string;
+    country: string;
 }

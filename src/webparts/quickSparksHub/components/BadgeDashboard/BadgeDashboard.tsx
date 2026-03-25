@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { IUserBadge } from '../../models/IUserBadge';
-import { filterBadgesByCategory, getUniqueCategories, searchBadges } from '../../utils/badgeUtils';
+import { filterBadgesBySkillStudio, getUniqueSkillStudios, searchBadges } from '../../utils/badgeUtils';
 import EmptyState from '../common/EmptyState/EmptyState';
 import Skeleton from '../common/Skeleton/Skeleton';
 import BadgeCard from './BadgeCard/BadgeCard';
@@ -14,7 +14,7 @@ interface IBadgeDashboardProps {
 
 const BadgeDashboard: React.FC<IBadgeDashboardProps> = ({ badges, loading, error }) => {
     const [searchQuery, setSearchQuery] = React.useState('');
-    const [selectedCategory, setSelectedCategory] = React.useState('');
+    const [selectedStudio, setSelectedStudio] = React.useState('');
 
     if (loading) {
         return <div className={styles.skeletonGrid}>{renderSkeletonCards(8)}</div>;
@@ -24,11 +24,11 @@ const BadgeDashboard: React.FC<IBadgeDashboardProps> = ({ badges, loading, error
         return <EmptyState title="unable to load badges" message={error} />;
     }
 
-    const categories = getUniqueCategories(badges);
+    const studios = getUniqueSkillStudios(badges);
     let filtered = badges;
 
-    if (selectedCategory) {
-        filtered = filterBadgesByCategory(filtered, selectedCategory);
+    if (selectedStudio) {
+        filtered = filterBadgesBySkillStudio(filtered, selectedStudio);
     }
 
     if (searchQuery) {
@@ -48,14 +48,14 @@ const BadgeDashboard: React.FC<IBadgeDashboardProps> = ({ badges, loading, error
                 />
                 <select
                     className={styles.filterSelect}
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    aria-label="filter by series"
+                    value={selectedStudio}
+                    onChange={(e) => setSelectedStudio(e.target.value)}
+                    aria-label="filter by skill studio"
                 >
-                    <option value="">all series</option>
-                    {categories.map((cat) => (
-                        <option key={cat} value={cat}>
-                            {cat}
+                    <option value="">all skill studios</option>
+                    {studios.map((studio) => (
+                        <option key={studio} value={studio}>
+                            {studio}
                         </option>
                     ))}
                 </select>
@@ -65,7 +65,7 @@ const BadgeDashboard: React.FC<IBadgeDashboardProps> = ({ badges, loading, error
             ) : (
                 <div className={styles.grid}>
                     {filtered.map((badge) => (
-                        <BadgeCard key={badge.sessionId} badge={badge} />
+                        <BadgeCard key={badge.trainingCode} badge={badge} />
                     ))}
                 </div>
             )}

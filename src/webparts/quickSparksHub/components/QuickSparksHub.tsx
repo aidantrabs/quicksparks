@@ -3,7 +3,7 @@ import { ILeaderboardEntry } from '../models/ILeaderboardEntry';
 import { ISession } from '../models/ISession';
 import { IUserBadge } from '../models/IUserBadge';
 import { IDataService } from '../services/IDataService';
-import { countEarnedBadges } from '../utils/badgeUtils';
+import { countEarnedBadges, getTotalPoints } from '../utils/badgeUtils';
 import { TabId } from '../utils/constants';
 import AttendanceStreak from './AttendanceStreak/AttendanceStreak';
 import BadgeDashboard from './BadgeDashboard/BadgeDashboard';
@@ -99,6 +99,7 @@ export default class QuickSparksHub extends React.Component<IQuickSparksHubProps
         } = this.state;
         const displayName = dataService.getCurrentUserDisplayName();
         const earned = countEarnedBadges(badges);
+        const totalPoints = getTotalPoints(badges);
 
         return (
             <ErrorBoundary>
@@ -107,6 +108,7 @@ export default class QuickSparksHub extends React.Component<IQuickSparksHubProps
                         displayName={displayName}
                         badgesEarned={earned}
                         badgesTotal={badges.length}
+                        totalPoints={totalPoints}
                         streak={streak}
                     />
                     <TabNav activeTab={activeTab} onTabChange={(tab) => this.setState({ activeTab: tab })} />

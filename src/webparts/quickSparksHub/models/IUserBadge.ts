@@ -1,8 +1,13 @@
+import { BadgeTier } from './ISession';
+
 export interface IUserBadge {
     sessionId: number;
+    trainingCode: string;
     title: string;
-    badgeImageUrl: string;
+    skillStudio: string;
     category: string;
-    earned: boolean;
+    tier: BadgeTier;
+    points: number;
     earnedDate: Date | null;
+    badgeImageUrl: string;
 }

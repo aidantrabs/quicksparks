@@ -54,12 +54,22 @@
     transition: width var(--qs-transition-slow);
 }
 
-.rate {
-    min-width: 48px;
+.stats {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 64px;
+}
+
+.points {
     font-size: var(--qs-font-size-body);
     font-weight: var(--qs-font-weight-bold);
     color: var(--qs-color-text-primary);
-    text-align: right;
+}
+
+.badges {
+    font-size: var(--qs-font-size-caption);
+    color: var(--qs-color-text-muted);
 }
 
 @keyframes fadeIn {

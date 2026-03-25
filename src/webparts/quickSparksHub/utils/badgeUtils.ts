@@ -3,52 +3,69 @@ import { ISession } from '../models/ISession';
 import { IUserBadge } from '../models/IUserBadge';
 
 export function deriveUserBadges(sessions: ISession[], attendance: IAttendance[], userEmail: string): IUserBadge[] {
-    const userAttendance: Record<number, Date> = {};
+    const userAttendance: Record<string, IAttendance> = {};
     for (let i = 0; i < attendance.length; i++) {
         const record = attendance[i];
         if (record.employeeEmail.toLowerCase() === userEmail.toLowerCase()) {
-            userAttendance[record.sessionId] = record.attendedDate;
+            userAttendance[record.trainingCode] = record;
         }
     }
 
-    return sessions.map((session) => ({
-        sessionId: session.id,
-        title: session.title,
-        badgeImageUrl: session.badgeImageUrl,
-        category: session.category,
-        earned: userAttendance[session.id] !== undefined,
-        earnedDate: userAttendance[session.id] || null,
-    }));
+    return sessions.map((session) => {
+        const record = userAttendance[session.trainingCode];
+        return {
+            sessionId: session.id,
+            trainingCode: session.trainingCode,
+            title: session.title,
+            skillStudio: session.skillStudio,
+            category: session.category,
+            tier: record ? record.tier : 'none',
+            points: record ? record.points : 0,
+            earnedDate: record ? session.sessionDate : null,
+            badgeImageUrl: '',
+        };
+    });
 }
 
 export function countEarnedBadges(badges: IUserBadge[]): number {
     let count = 0;
     for (let i = 0; i < badges.length; i++) {
-        if (badges[i].earned) count++;
+        if (badges[i].tier !== 'none') count++;
     }
     return count;
 }
 
-export function getUniqueCategories(badges: IUserBadge[]): string[] {
-    const seen: Record<string, boolean> = {};
-    const categories: string[] = [];
+export function getTotalPoints(badges: IUserBadge[]): number {
+    let total = 0;
     for (let i = 0; i < badges.length; i++) {
-        const cat = badges[i].category;
-        if (!seen[cat]) {
-            seen[cat] = true;
-            categories.push(cat);
-        }
+        total += badges[i].points;
     }
-    return categories;
+    return total;
 }
 
-export function filterBadgesByCategory(badges: IUserBadge[], category: string): IUserBadge[] {
-    return badges.filter((b) => b.category === category);
+export function getUniqueSkillStudios(badges: IUserBadge[]): string[] {
+    const seen: Record<string, boolean> = {};
+    const studios: string[] = [];
+    for (let i = 0; i < badges.length; i++) {
+        const studio = badges[i].skillStudio;
+        if (!seen[studio]) {
+            seen[studio] = true;
+            studios.push(studio);
+        }
+    }
+    return studios;
+}
+
+export function filterBadgesBySkillStudio(badges: IUserBadge[], skillStudio: string): IUserBadge[] {
+    return badges.filter((b) => b.skillStudio === skillStudio);
 }
 
 export function searchBadges(badges: IUserBadge[], query: string): IUserBadge[] {
     const lower = query.toLowerCase();
     return badges.filter(
-        (b) => b.title.toLowerCase().indexOf(lower) !== -1 || b.category.toLowerCase().indexOf(lower) !== -1,
+        (b) =>
+            b.title.toLowerCase().indexOf(lower) !== -1 ||
+            b.skillStudio.toLowerCase().indexOf(lower) !== -1 ||
+            b.category.toLowerCase().indexOf(lower) !== -1,
     );
 }

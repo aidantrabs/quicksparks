@@ -7,7 +7,8 @@ export interface IDataService {
     getAllSessions(): Promise<ISession[]>;
     getUpcomingSessions(): Promise<ISession[]>;
     getUserAttendanceStreak(email: string): Promise<number>;
-    getLeaderboard(): Promise<ILeaderboardEntry[]>;
+    getLeaderboard(country?: string): Promise<ILeaderboardEntry[]>;
+    getCountries(): Promise<string[]>;
     getCurrentUserEmail(): string;
     getCurrentUserDisplayName(): string;
 }

@@ -1,7 +1,13 @@
+import { BadgeTier } from './ISession';
+
 export interface IAttendance {
     sessionId: number;
+    trainingCode: string;
+    employeeNumber: string;
     employeeEmail: string;
     employeeName: string;
-    attendedDate: Date;
-    division: string;
+    branchUnit: string;
+    country: string;
+    tier: BadgeTier;
+    points: number;
 }

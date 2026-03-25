@@ -20,8 +20,10 @@ const SessionCard: React.FC<ISessionCardProps> = ({ session }) => {
             </div>
             <div className={styles.body}>
                 <h3 className={styles.title}>{session.title}</h3>
-                <p className={styles.description}>{session.description}</p>
-                <span className={styles.categoryPill}>{session.category}</span>
+                <div className={styles.meta}>
+                    <span className={styles.studioPill}>{session.skillStudio}</span>
+                    <span className={styles.categoryPill}>{session.category}</span>
+                </div>
             </div>
         </article>
     );

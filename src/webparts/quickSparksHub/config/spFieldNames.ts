@@ -6,16 +6,22 @@ export const SP_LISTS = {
 export const SP_SESSION_FIELDS = {
     id: 'ID',
     title: 'Title',
+    trainingCode: 'TrainingCode',
     sessionDate: 'SessionDate',
-    description: 'Description',
-    badgeImageUrl: 'BadgeImageUrl',
-    category: 'Category',
+    skillStudio: 'SkillStudio',
+    category: 'CategoryOfTraining',
+    country: 'Country',
 } as const;
 
 export const SP_ATTENDANCE_FIELDS = {
     sessionId: 'SessionIdId',
-    employeeEmail: 'EmployeeEmail',
-    employeeName: 'EmployeeName',
-    attendedDate: 'AttendedDate',
-    division: 'Division',
+    trainingCode: 'TrainingCode',
+    employeeNumber: 'EmployeeNumber',
+    employeeEmail: 'EmailAddress',
+    employeeName: 'Title',
+    branchUnit: 'BranchUnit',
+    country: 'Country',
+    bronze: 'Bronze',
+    silver: 'Silver',
+    gold: 'Gold',
 } as const;

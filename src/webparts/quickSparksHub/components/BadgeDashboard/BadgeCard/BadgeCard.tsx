@@ -8,31 +8,32 @@ interface IBadgeCardProps {
     badge: IUserBadge;
 }
 
-const BadgeCard: React.FC<IBadgeCardProps> = ({ badge }) => {
-    const separatorIndex = badge.title.indexOf(' - "');
-    const shortTitle = separatorIndex !== -1 ? badge.title.split(' - "')[1].replace(/"$/, '') : badge.title;
+const TIER_COLORS: Record<string, string> = {
+    gold: '#d4a017',
+    silver: '#8b919a',
+    bronze: '#b87333',
+};
 
-    if (!badge.earned) {
+const BadgeCard: React.FC<IBadgeCardProps> = ({ badge }) => {
+    if (badge.tier === 'none') {
         return (
-            <article className={styles.locked} aria-label={`${shortTitle} badge - not yet earned`}>
-                {badge.badgeImageUrl ? (
-                    <img src={badge.badgeImageUrl} alt="" className={styles.lockedImage} />
-                ) : (
-                    <div className={styles.lockedImage}>
-                        <PlaceholderBadge size={100} />
-                    </div>
-                )}
-                <p className={styles.title}>{shortTitle}</p>
+            <article className={styles.locked} aria-label={`${badge.title} - not yet earned`}>
+                <div className={styles.lockedImage}>
+                    <PlaceholderBadge size={100} />
+                </div>
+                <p className={styles.title}>{badge.title}</p>
                 <span className={styles.lockLabel}>locked</span>
-                <span className={styles.category}>{badge.category}</span>
+                <span className={styles.skillStudio}>{badge.skillStudio}</span>
             </article>
         );
     }
 
+    const tierColor = TIER_COLORS[badge.tier] || TIER_COLORS.gold;
+
     return (
         <article
             className={styles.card}
-            aria-label={`${shortTitle} badge - earned ${badge.earnedDate ? formatDateShort(badge.earnedDate) : ''}`}
+            aria-label={`${badge.title} - ${badge.tier} badge earned ${badge.earnedDate ? formatDateShort(badge.earnedDate) : ''}`}
         >
             {badge.badgeImageUrl ? (
                 <img src={badge.badgeImageUrl} alt="" className={styles.badgeImage} />
@@ -41,9 +42,13 @@ const BadgeCard: React.FC<IBadgeCardProps> = ({ badge }) => {
                     <PlaceholderBadge size={100} />
                 </div>
             )}
-            <p className={styles.title}>{shortTitle}</p>
+            <span className={styles.tierBadge} style={{ backgroundColor: tierColor }}>
+                {badge.tier}
+            </span>
+            <p className={styles.title}>{badge.title}</p>
             {badge.earnedDate && <span className={styles.date}>{formatDateShort(badge.earnedDate)}</span>}
-            <span className={styles.category}>{badge.category}</span>
+            <span className={styles.points}>{badge.points} pts</span>
+            <span className={styles.skillStudio}>{badge.skillStudio}</span>
         </article>
     );
 };

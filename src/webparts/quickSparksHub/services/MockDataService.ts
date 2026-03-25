@@ -1,10 +1,9 @@
 import { IAttendance } from '../models/IAttendance';
 import { ILeaderboardEntry } from '../models/ILeaderboardEntry';
-import { ISession } from '../models/ISession';
+import { BadgeTier, ISession } from '../models/ISession';
 import { IUserBadge } from '../models/IUserBadge';
 import { deriveUserBadges } from '../utils/badgeUtils';
-import { DIVISIONS } from '../utils/constants';
-import { calculateStreak, isUpcoming } from '../utils/dateUtils';
+import { calculateStreak } from '../utils/dateUtils';
 import { IDataService } from './IDataService';
 
 const MOCK_USER_EMAIL = 'aidan.traboulay@rfhl.com';
@@ -13,186 +12,300 @@ const MOCK_USER_NAME = 'Aidan Traboulay';
 const MOCK_SESSIONS: ISession[] = [
     {
         id: 1,
-        title: 'From Numbers to Narrative - "Liquidity Matters - Can the Customer Pay Their Bills"',
-        sessionDate: new Date(2026, 0, 20),
-        description:
-            "Understand liquidity fundamentals and how to assess a customer's ability to meet financial obligations.",
-        badgeImageUrl: require('../assets/badges/liquidity-matters.png'),
-        category: 'From Numbers to Narrative',
+        trainingCode: '1.1',
+        title: 'Say It So It Sticks',
+        sessionDate: new Date(2026, 0, 13),
+        skillStudio: '1.0 The Conversation Catalyst',
+        category: 'Business Skills',
+        country: 'RBL',
         isUpcoming: false,
     },
     {
         id: 2,
-        title: 'Courtesy Counts - "Welcoming and Entertaining Guests / Clients"',
-        sessionDate: new Date(2026, 1, 26),
-        description: 'Master the art of professional hospitality and creating memorable client experiences.',
-        badgeImageUrl: require('../assets/badges/welcoming-entertaining-guests.png'),
-        category: 'Courtesy Counts',
+        trainingCode: '2.1',
+        title: 'The Power of Pause: Think Before You Leap',
+        sessionDate: new Date(2026, 0, 15),
+        skillStudio: '2.0 Mind Over Maybes',
+        category: 'Compliance',
+        country: 'RBL',
         isUpcoming: false,
     },
     {
         id: 3,
-        title: 'Outside In; The Mindset That Changes Everything - "Diagnosing the Drama"',
-        sessionDate: new Date(2026, 1, 24),
-        description:
-            'Learn to identify root causes of workplace challenges by shifting perspective from inside-out to outside-in.',
-        badgeImageUrl: require('../assets/badges/diagnosing-drama.png'),
-        category: 'Outside In; The Mindset That Changes Everything',
+        trainingCode: '3.1',
+        title: 'Why Mindset Matters',
+        sessionDate: new Date(2026, 0, 19),
+        skillStudio: '3.0 Outside In: The Mindset That Changes Everything',
+        category: 'Leadership',
+        country: 'RBL',
         isUpcoming: false,
     },
     {
         id: 4,
-        title: 'Outside In; The Mindset That Changes Everything - "Turning My Job Outward"',
-        sessionDate: new Date(2026, 2, 10),
-        description: 'Apply the outside-in mindset to transform how you approach your daily responsibilities.',
-        badgeImageUrl: require('../assets/badges/turning-my-job.png'),
-        category: 'Outside In; The Mindset That Changes Everything',
+        trainingCode: '4.1',
+        title: 'Liquidity Matters',
+        sessionDate: new Date(2026, 0, 20),
+        skillStudio: '4.0 From Numbers to Narrative',
+        category: 'Credit',
+        country: 'RBL',
         isUpcoming: false,
     },
     {
         id: 5,
-        title: 'The Conversation Catalyst: Beyond Words',
-        sessionDate: new Date(2026, 2, 12),
-        description: 'Explore non-verbal communication techniques that enhance professional conversations.',
-        badgeImageUrl: require('../assets/badges/beyond-words.png'),
-        category: 'The Conversation Catalyst',
+        trainingCode: '5.1',
+        title: 'Team Up with Teams',
+        sessionDate: new Date(2026, 0, 22),
+        skillStudio: '5.0 Byte-Sized Brilliance',
+        category: 'Service/Support/Technical',
+        country: 'RBL',
         isUpcoming: false,
     },
     {
         id: 6,
-        title: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment - "Excel-lence Unlocked"',
-        sessionDate: new Date(2026, 2, 18),
-        description: 'Unlock advanced Excel features to boost productivity and streamline data analysis workflows.',
-        badgeImageUrl: require('../assets/badges/excellence-unlocked.png'),
-        category: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment',
+        trainingCode: '3.2',
+        title: 'Radical Self-Awareness',
+        sessionDate: new Date(2026, 0, 27),
+        skillStudio: '3.0 Outside In: The Mindset That Changes Everything',
+        category: 'Leadership',
+        country: 'RBL',
         isUpcoming: false,
     },
     {
         id: 7,
-        title: 'The Conversation Catalyst - "Active Listening Mastery"',
-        sessionDate: new Date(2026, 2, 17),
-        description: 'Develop active listening skills that build trust and improve client relationships.',
-        badgeImageUrl: require('../assets/badges/active-listening-mastery.png'),
-        category: 'The Conversation Catalyst',
+        trainingCode: '7.1',
+        title: 'Simplifying Compliance',
+        sessionDate: new Date(2026, 0, 29),
+        skillStudio: '7.0 Think Risk, Act Right',
+        category: 'Compliance',
+        country: 'RBL',
         isUpcoming: false,
     },
     {
         id: 8,
-        title: 'From Numbers to Narrative - "Reading the Balance Sheet Story"',
-        sessionDate: new Date(2026, 3, 8),
-        description: 'Learn to interpret balance sheets and communicate financial health in plain language.',
-        badgeImageUrl: '',
-        category: 'From Numbers to Narrative',
-        isUpcoming: true,
+        trainingCode: '8.1',
+        title: 'Taking Charge of Your Money',
+        sessionDate: new Date(2026, 1, 3),
+        skillStudio: '8.0 Dollars Making Sense?',
+        category: 'Business Skills',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 9,
-        title: 'Courtesy Counts - "Handling Difficult Conversations with Grace"',
-        sessionDate: new Date(2026, 3, 15),
-        description: 'Strategies for navigating tough conversations while maintaining professionalism and empathy.',
-        badgeImageUrl: '',
-        category: 'Courtesy Counts',
-        isUpcoming: true,
+        trainingCode: '9.1',
+        title: 'Unlocking Potential: The Heart of Coaching',
+        sessionDate: new Date(2026, 1, 5),
+        skillStudio: "9.0 The Leader's Code",
+        category: 'Leadership',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 10,
-        title: 'Outside In; The Mindset That Changes Everything - "Seeing Through the Customer\'s Eyes"',
-        sessionDate: new Date(2026, 3, 22),
-        description: 'Practice empathy mapping and customer journey analysis to improve service delivery.',
-        badgeImageUrl: '',
-        category: 'Outside In; The Mindset That Changes Everything',
-        isUpcoming: true,
+        trainingCode: '3.3',
+        title: 'My Distorted Reality',
+        sessionDate: new Date(2026, 1, 11),
+        skillStudio: '3.0 Outside In: The Mindset That Changes Everything',
+        category: 'Leadership',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 11,
-        title: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment - "Power Automate Essentials"',
-        sessionDate: new Date(2026, 3, 29),
-        description: 'Automate repetitive tasks using Microsoft Power Automate to save time and reduce errors.',
-        badgeImageUrl: '',
-        category: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment',
-        isUpcoming: true,
+        trainingCode: '10.1',
+        title: 'Solve, Create, Innovate',
+        sessionDate: new Date(2026, 1, 12),
+        skillStudio: '10.0 Imagine That!',
+        category: 'Business Skills',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 12,
-        title: 'The Conversation Catalyst - "Feedback That Fuels Growth"',
-        sessionDate: new Date(2026, 4, 6),
-        description: 'Learn frameworks for giving and receiving constructive feedback that drives development.',
-        badgeImageUrl: '',
-        category: 'The Conversation Catalyst',
-        isUpcoming: true,
+        trainingCode: '3.4',
+        title: 'Diagnosing the Drama',
+        sessionDate: new Date(2026, 1, 24),
+        skillStudio: '3.0 Outside In: The Mindset That Changes Everything',
+        category: 'Leadership',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 13,
-        title: 'From Numbers to Narrative - "Cash Flow Confidence"',
-        sessionDate: new Date(2026, 4, 13),
-        description: 'Build confidence in analyzing and presenting cash flow statements to stakeholders.',
-        badgeImageUrl: '',
-        category: 'From Numbers to Narrative',
-        isUpcoming: true,
+        trainingCode: '11.1',
+        title: 'Welcoming and Entertaining Guests/Clients',
+        sessionDate: new Date(2026, 1, 26),
+        skillStudio: '11.0 Courtesy Counts',
+        category: 'Service/Support/Technical',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 14,
-        title: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment - "Teams Tips & Tricks"',
-        sessionDate: new Date(2026, 4, 20),
-        description: 'Discover hidden features in Microsoft Teams that boost collaboration and productivity.',
-        badgeImageUrl: '',
-        category: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment',
-        isUpcoming: true,
+        trainingCode: '8.1b',
+        title: 'Taking Charge of Your Money',
+        sessionDate: new Date(2026, 2, 2),
+        skillStudio: '8.0 Dollars Making Sense?',
+        category: 'Business Skills',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 15,
-        title: 'Courtesy Counts - "The Art of the Follow-Up"',
-        sessionDate: new Date(2026, 4, 27),
-        description: 'Why timely, thoughtful follow-ups set you apart in client service excellence.',
-        badgeImageUrl: '',
-        category: 'Courtesy Counts',
-        isUpcoming: true,
+        trainingCode: '11.4',
+        title: 'Respect in the Workplace: Building a Culture of Courtesy',
+        sessionDate: new Date(2026, 2, 3),
+        skillStudio: '11.0 Courtesy Counts',
+        category: 'Service/Support/Technical',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 16,
-        title: 'Outside In; The Mindset That Changes Everything - "Building Bridges, Not Walls"',
-        sessionDate: new Date(2026, 5, 3),
-        description: 'Techniques for cross-departmental collaboration using an outside-in approach.',
-        badgeImageUrl: '',
-        category: 'Outside In; The Mindset That Changes Everything',
-        isUpcoming: true,
+        trainingCode: '12.1',
+        title: 'Car Basics & Maintenance (Tyre Health)',
+        sessionDate: new Date(2026, 2, 5),
+        skillStudio: '12.0 Everyday Wins',
+        category: 'Personal Development',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 17,
-        title: 'The Conversation Catalyst - "Presenting with Impact"',
-        sessionDate: new Date(2026, 5, 10),
-        description: 'Structure and deliver presentations that engage, persuade, and leave a lasting impression.',
-        badgeImageUrl: '',
-        category: 'The Conversation Catalyst',
-        isUpcoming: true,
+        trainingCode: '3.5',
+        title: 'Turning My Job Outward',
+        sessionDate: new Date(2026, 2, 10),
+        skillStudio: '3.0 Outside In: The Mindset That Changes Everything',
+        category: 'Leadership',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 18,
-        title: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment - "SharePoint for Everyday Use"',
-        sessionDate: new Date(2026, 5, 17),
-        description: 'Practical tips for using SharePoint to organize documents and collaborate effectively.',
-        badgeImageUrl: '',
-        category: 'Byte-Sized Brilliance; Your Guide to Digital Empowerment',
-        isUpcoming: true,
+        trainingCode: '1.2',
+        title: 'Beyond Words',
+        sessionDate: new Date(2026, 2, 12),
+        skillStudio: '1.0 The Conversation Catalyst',
+        category: 'Business Skills',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 19,
-        title: 'From Numbers to Narrative - "Ratio Reasoning"',
-        sessionDate: new Date(2026, 5, 24),
-        description: 'Demystify financial ratios and learn to use them in everyday banking conversations.',
-        badgeImageUrl: '',
-        category: 'From Numbers to Narrative',
-        isUpcoming: true,
+        trainingCode: '1.3',
+        title: 'Active Listening Mastery',
+        sessionDate: new Date(2026, 2, 17),
+        skillStudio: '1.0 The Conversation Catalyst',
+        category: 'Business Skills',
+        country: 'RBL',
+        isUpcoming: false,
     },
     {
         id: 20,
-        title: 'Courtesy Counts - "Cultural Intelligence in Client Service"',
-        sessionDate: new Date(2026, 6, 1),
-        description: 'Develop cultural awareness to serve the diverse communities across the Republic Bank footprint.',
-        badgeImageUrl: '',
-        category: 'Courtesy Counts',
+        trainingCode: '5.2',
+        title: 'Excel-lence Unlocked',
+        sessionDate: new Date(2026, 2, 18),
+        skillStudio: '5.0 Byte-Sized Brilliance',
+        category: 'Service/Support/Technical',
+        country: 'RBL',
+        isUpcoming: false,
+    },
+    {
+        id: 21,
+        trainingCode: '2.2',
+        title: 'Frame It Right: Solving the Real Problem',
+        sessionDate: new Date(2026, 2, 24),
+        skillStudio: '2.0 Mind Over Maybes',
+        category: 'Compliance',
+        country: 'RBL',
+        isUpcoming: false,
+    },
+    {
+        id: 22,
+        trainingCode: '6.1',
+        title: 'Credit Compass: Finding Your Direction',
+        sessionDate: new Date(2026, 3, 8),
+        skillStudio: '6.0 Credit Compass',
+        category: 'Credit',
+        country: 'RBL',
         isUpcoming: true,
     },
+    {
+        id: 23,
+        trainingCode: '3.6',
+        title: 'Building Bridges, Not Walls',
+        sessionDate: new Date(2026, 3, 15),
+        skillStudio: '3.0 Outside In: The Mindset That Changes Everything',
+        category: 'Leadership',
+        country: 'RBL',
+        isUpcoming: true,
+    },
+    {
+        id: 24,
+        trainingCode: '1.4',
+        title: 'Feedback That Fuels Growth',
+        sessionDate: new Date(2026, 3, 22),
+        skillStudio: '1.0 The Conversation Catalyst',
+        category: 'Business Skills',
+        country: 'RBL',
+        isUpcoming: true,
+    },
+    {
+        id: 25,
+        trainingCode: '5.3',
+        title: 'Power Automate Essentials',
+        sessionDate: new Date(2026, 3, 29),
+        skillStudio: '5.0 Byte-Sized Brilliance',
+        category: 'Service/Support/Technical',
+        country: 'RBL',
+        isUpcoming: true,
+    },
+];
+
+const MOCK_BRANCHES = [
+    'Independence Sq-Support',
+    'HO-HR,Learning & Talent Dev Ct',
+    'Park St-Sales',
+    'Gulf View-Branch Sales',
+    'Cipero St-Service',
+    'Couva-Sales',
+    'Trincity - Branch Sales',
+    'San Juan-Branch Sales',
+    'Diego Martin-Sales',
+    'Arima-Branch Sales',
+    'Marabella-Sales',
+    'Princes Town-Sales',
+    'Ellerslie Court-Branch Sales',
+    'HO-Compliance Department',
+    'HO-Strategic Transformation Ut',
+    'Credit Crd Centre-Operations',
+    'Warrens',
+    'Holetown',
+    'Speightstown',
+    'Basseterre Branch',
+];
+
+const MOCK_COUNTRIES = [
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBL',
+    'RBB',
+    'RBB',
+    'RBB',
+    'RKN',
 ];
 
 const MOCK_EMPLOYEE_NAMES: string[] = [
@@ -248,6 +361,21 @@ const MOCK_EMPLOYEE_NAMES: string[] = [
     'Wade Placeholder',
 ];
 
+function pickTier(seed: number): BadgeTier {
+    const r = seed % 100;
+    if (r < 15) return 'none';
+    if (r < 25) return 'bronze';
+    if (r < 40) return 'silver';
+    return 'gold';
+}
+
+function tierPoints(tier: BadgeTier): number {
+    if (tier === 'gold') return 30;
+    if (tier === 'silver') return 20;
+    if (tier === 'bronze') return 10;
+    return 0;
+}
+
 function buildMockAttendance(): IAttendance[] {
     const records: IAttendance[] = [];
     const pastSessions = MOCK_SESSIONS.filter((s) => !s.isUpcoming);
@@ -255,34 +383,64 @@ function buildMockAttendance(): IAttendance[] {
     for (let i = 0; i < MOCK_EMPLOYEE_NAMES.length; i++) {
         const name = MOCK_EMPLOYEE_NAMES[i];
         const email = `${name.toLowerCase().replace(/ /g, '.')}@rfhl.com`;
-        const division = DIVISIONS[i % DIVISIONS.length];
+        const branch = MOCK_BRANCHES[i % MOCK_BRANCHES.length];
+        const country = MOCK_COUNTRIES[i % MOCK_COUNTRIES.length];
         const attendRate = 0.3 + (i % 5) * 0.15;
 
         for (let j = 0; j < pastSessions.length; j++) {
             const session = pastSessions[j];
             const seed = ((i + 1) * (j + 1) * 7) % 100;
             if (seed / 100 < attendRate) {
+                const tier = pickTier((i + 1) * (j + 3) * 13);
+                if (tier === 'none') continue;
                 records.push({
                     sessionId: session.id,
+                    trainingCode: session.trainingCode,
+                    employeeNumber: String(10000 + i),
                     employeeEmail: email,
                     employeeName: name,
-                    attendedDate: session.sessionDate,
-                    division: division,
+                    branchUnit: branch,
+                    country: country,
+                    tier: tier,
+                    points: tierPoints(tier),
                 });
             }
         }
     }
 
-    const mockUserSessions = [1, 3, 4, 5, 6, 7];
+    const mockUserSessions: Array<{ code: string; tier: BadgeTier }> = [
+        { code: '1.1', tier: 'gold' },
+        { code: '3.1', tier: 'gold' },
+        { code: '3.4', tier: 'gold' },
+        { code: '3.5', tier: 'silver' },
+        { code: '1.2', tier: 'gold' },
+        { code: '5.2', tier: 'gold' },
+        { code: '1.3', tier: 'gold' },
+        { code: '4.1', tier: 'gold' },
+        { code: '7.1', tier: 'silver' },
+        { code: '8.1', tier: 'gold' },
+        { code: '9.1', tier: 'bronze' },
+        { code: '11.1', tier: 'gold' },
+        { code: '10.1', tier: 'gold' },
+        { code: '2.1', tier: 'gold' },
+    ];
+
     for (let k = 0; k < mockUserSessions.length; k++) {
-        const session = MOCK_SESSIONS[mockUserSessions[k] - 1];
-        records.push({
-            sessionId: session.id,
-            employeeEmail: MOCK_USER_EMAIL,
-            employeeName: MOCK_USER_NAME,
-            attendedDate: session.sessionDate,
-            division: 'Information Technology',
-        });
+        const entry = mockUserSessions[k];
+        const session = MOCK_SESSIONS.filter((s) => s.trainingCode === entry.code)[0];
+        if (session) {
+            records.push({
+                sessionId: session.id,
+                trainingCode: session.trainingCode,
+                employeeNumber: '99999',
+                employeeEmail: MOCK_USER_EMAIL,
+                employeeName: MOCK_USER_NAME,
+                branchUnit: 'GTSD - Regional Solution Deliv',
+                country: 'RBL',
+                tier: entry.tier,
+                points: tierPoints(entry.tier),
+            });
+        }
     }
 
     return records;
@@ -300,52 +458,70 @@ export class MockDataService implements IDataService {
     }
 
     public getUpcomingSessions(): Promise<ISession[]> {
-        return Promise.resolve(MOCK_SESSIONS.filter((s) => isUpcoming(s.sessionDate)));
+        return Promise.resolve(MOCK_SESSIONS.filter((s) => s.isUpcoming));
     }
 
     public getUserAttendanceStreak(email: string): Promise<number> {
         const userDates: Date[] = [];
         for (let i = 0; i < MOCK_ATTENDANCE.length; i++) {
             if (MOCK_ATTENDANCE[i].employeeEmail.toLowerCase() === email.toLowerCase()) {
-                userDates.push(MOCK_ATTENDANCE[i].attendedDate);
+                const session = MOCK_SESSIONS.filter((s) => s.trainingCode === MOCK_ATTENDANCE[i].trainingCode)[0];
+                if (session) userDates.push(session.sessionDate);
             }
         }
         return Promise.resolve(calculateStreak(userDates));
     }
 
-    public getLeaderboard(): Promise<ILeaderboardEntry[]> {
-        const divisionStats: Record<string, { employees: Record<string, boolean>; total: number }> = {};
+    public getLeaderboard(country?: string): Promise<ILeaderboardEntry[]> {
+        let filtered = MOCK_ATTENDANCE;
+        if (country) {
+            filtered = MOCK_ATTENDANCE.filter((a) => a.country === country);
+        }
 
-        for (let i = 0; i < MOCK_ATTENDANCE.length; i++) {
-            const record = MOCK_ATTENDANCE[i];
-            if (!divisionStats[record.division]) {
-                divisionStats[record.division] = { employees: {}, total: 0 };
+        const branchStats: Record<string, { badges: number; points: number; country: string }> = {};
+
+        for (let i = 0; i < filtered.length; i++) {
+            const record = filtered[i];
+            if (!branchStats[record.branchUnit]) {
+                branchStats[record.branchUnit] = { badges: 0, points: 0, country: record.country };
             }
-            divisionStats[record.division].employees[record.employeeEmail] = true;
-            divisionStats[record.division].total++;
+            branchStats[record.branchUnit].badges++;
+            branchStats[record.branchUnit].points += record.points;
         }
 
         const entries: ILeaderboardEntry[] = [];
-        const divisionNames = Object.keys(divisionStats);
-        for (let i = 0; i < divisionNames.length; i++) {
-            const division = divisionNames[i];
-            const stats = divisionStats[division];
-            const employeeCount = Object.keys(stats.employees).length;
+        const branchNames = Object.keys(branchStats);
+        for (let i = 0; i < branchNames.length; i++) {
+            const branch = branchNames[i];
+            const stats = branchStats[branch];
             entries.push({
                 rank: 0,
-                division: division,
-                totalEmployees: employeeCount,
-                totalAttendances: stats.total,
-                participationRate: Math.round((stats.total / (employeeCount * 7)) * 100),
+                branchUnit: branch,
+                country: stats.country,
+                totalBadges: stats.badges,
+                totalPoints: stats.points,
             });
         }
 
-        entries.sort((a, b) => b.participationRate - a.participationRate);
+        entries.sort((a, b) => b.totalPoints - a.totalPoints);
         for (let i = 0; i < entries.length; i++) {
             entries[i].rank = i + 1;
         }
 
         return Promise.resolve(entries);
+    }
+
+    public getCountries(): Promise<string[]> {
+        const seen: Record<string, boolean> = {};
+        const countries: string[] = [];
+        for (let i = 0; i < MOCK_ATTENDANCE.length; i++) {
+            const c = MOCK_ATTENDANCE[i].country;
+            if (!seen[c]) {
+                seen[c] = true;
+                countries.push(c);
+            }
+        }
+        return Promise.resolve(countries.sort());
     }
 
     public getCurrentUserEmail(): string {

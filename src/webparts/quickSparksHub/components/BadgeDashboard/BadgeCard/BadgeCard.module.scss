@@ -9,6 +9,7 @@
     transition: transform var(--qs-transition-default), box-shadow var(--qs-transition-default);
     text-align: center;
     font-family: var(--qs-font-family);
+    position: relative;
 }
 
 .card:hover {
@@ -26,7 +27,19 @@
     height: 100px;
     object-fit: contain;
     border-radius: var(--qs-radius-full);
-    margin-bottom: var(--qs-spacing-md);
+    margin-bottom: var(--qs-spacing-sm);
+}
+
+.tierBadge {
+    display: inline-block;
+    padding: 2px var(--qs-spacing-sm);
+    font-size: 11px;
+    font-weight: var(--qs-font-weight-bold);
+    color: var(--qs-color-surface);
+    border-radius: var(--qs-radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--qs-spacing-xs);
 }
 
 .title {
@@ -43,11 +56,16 @@
 
 .date {
     font-size: var(--qs-font-size-caption);
-    color: var(--qs-color-accent-magenta);
-    font-weight: var(--qs-font-weight-semibold);
+    color: var(--qs-color-text-muted);
 }
 
-.category {
+.points {
+    font-size: var(--qs-font-size-caption);
+    font-weight: var(--qs-font-weight-bold);
+    color: var(--qs-color-accent-magenta);
+}
+
+.skillStudio {
     font-size: 11px;
     color: var(--qs-color-text-muted);
     margin-top: var(--qs-spacing-xs);

@@ -24,11 +24,13 @@ const Leaderboard: React.FC<ILeaderboardProps> = ({ entries, loading, error }) =
         return <EmptyState title="no leaderboard data" message="attendance data is needed to generate rankings" />;
     }
 
+    const maxPoints = entries.length > 0 ? entries[0].totalPoints : 1;
+
     return (
         <div className={styles.container}>
-            <ol className={styles.list} aria-label="division leaderboard">
+            <ol className={styles.list} aria-label="branch/unit leaderboard">
                 {entries.map((entry, index) => (
-                    <LeaderboardRow key={entry.division} entry={entry} index={index} />
+                    <LeaderboardRow key={entry.branchUnit} entry={entry} index={index} maxPoints={maxPoints} />
                 ))}
             </ol>
         </div>
