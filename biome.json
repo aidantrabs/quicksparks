@@ -39,6 +39,7 @@
     "files": {
         "includes": [
             "src/**",
+            "!**/*.scss.ts",
             "*.json",
             "*.js"
         ]
