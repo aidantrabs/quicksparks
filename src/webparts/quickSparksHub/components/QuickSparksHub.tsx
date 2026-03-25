@@ -1,75 +1,74 @@
-import { escape as escapeString } from '@microsoft/sp-lodash-subset';
 import * as React from 'react';
-import type { IQuickSparksHubProps } from './IQuickSparksHubProps';
+import { IUserBadge } from '../models/IUserBadge';
+import { IDataService } from '../services/IDataService';
+import { countEarnedBadges } from '../utils/badgeUtils';
+import { TabId } from '../utils/constants';
+import ErrorBoundary from './common/ErrorBoundary/ErrorBoundary';
+import Header from './common/Header/Header';
+import TabNav from './common/TabNav/TabNav';
 import styles from './QuickSparksHub.module.scss';
 
-export default class QuickSparksHub extends React.Component<IQuickSparksHubProps> {
+interface IQuickSparksHubProps {
+    dataService: IDataService;
+}
+
+interface IQuickSparksHubState {
+    activeTab: TabId;
+    badges: IUserBadge[];
+    streak: number;
+    loading: boolean;
+}
+
+export default class QuickSparksHub extends React.Component<IQuickSparksHubProps, IQuickSparksHubState> {
+    constructor(props: IQuickSparksHubProps) {
+        super(props);
+        this.state = {
+            activeTab: 'My Badges',
+            badges: [],
+            streak: 0,
+            loading: true,
+        };
+    }
+
+    public componentDidMount(): void {
+        this.loadData().catch(() => {
+            this.setState({ loading: false });
+        });
+    }
+
+    private async loadData(): Promise<void> {
+        const { dataService } = this.props;
+        const email = dataService.getCurrentUserEmail();
+        const [badges, streak] = await Promise.all([
+            dataService.getUserBadges(email),
+            dataService.getUserAttendanceStreak(email),
+        ]);
+        this.setState({ badges, streak, loading: false });
+    }
+
     public render(): React.ReactElement<IQuickSparksHubProps> {
-        const { description, isDarkTheme, environmentMessage, hasTeamsContext, userDisplayName } = this.props;
+        const { dataService } = this.props;
+        const { activeTab, badges, streak } = this.state;
+        const displayName = dataService.getCurrentUserDisplayName();
+        const earned = countEarnedBadges(badges);
 
         return (
-            <section className={`${styles.quickSparksHub} ${hasTeamsContext ? styles.teams : ''}`}>
-                <div className={styles.welcome}>
-                    <img
-                        alt=""
-                        src={
-                            isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')
-                        }
-                        className={styles.welcomeImage}
+            <ErrorBoundary>
+                <main className={styles.root}>
+                    <Header
+                        displayName={displayName}
+                        badgesEarned={earned}
+                        badgesTotal={badges.length}
+                        streak={streak}
                     />
-                    <h2>Well done, {escapeString(userDisplayName)}!</h2>
-                    <div>{environmentMessage}</div>
-                    <div>
-                        Web part property value: <strong>{escapeString(description)}</strong>
+                    <TabNav activeTab={activeTab} onTabChange={(tab) => this.setState({ activeTab: tab })} />
+                    <div className={styles.content} role="tabpanel" aria-label={activeTab}>
+                        {activeTab === 'My Badges' && <div>badges view placeholder</div>}
+                        {activeTab === 'Upcoming' && <div>upcoming sessions placeholder</div>}
+                        {activeTab === 'Leaderboard' && <div>leaderboard placeholder</div>}
                     </div>
-                </div>
-                <div>
-                    <h3>Welcome to SharePoint Framework!</h3>
-                    <p>
-                        The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and
-                        SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On,
-                        automatic hosting and industry standard tooling.
-                    </p>
-                    <h4>Learn more about SPFx development:</h4>
-                    <ul className={styles.links}>
-                        <li>
-                            <a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">
-                                SharePoint Framework Overview
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">
-                                Use Microsoft Graph in your solution
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">
-                                Build for Microsoft Teams using SharePoint Framework
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">
-                                Build for Microsoft Viva Connections using SharePoint Framework
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">
-                                Publish SharePoint Framework applications to the marketplace
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">
-                                SharePoint Framework API reference
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">
-                                Microsoft 365 Developer Community
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </section>
+                </main>
+            </ErrorBoundary>
         );
     }
 }
