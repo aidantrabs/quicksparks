@@ -10,6 +10,16 @@
 
 .content {
     padding: var(--qs-spacing-xl);
+    animation: fadeIn var(--qs-transition-default) ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @media (max-width: 480px) {
