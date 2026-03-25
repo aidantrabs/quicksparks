@@ -1,0 +1,23 @@
+.container {
+    font-family: var(--qs-font-family);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--qs-spacing-md);
+}
+
+.skeletonList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--qs-spacing-md);
+}
+
+.skeletonCard {
+    display: flex;
+    gap: var(--qs-spacing-base);
+    padding: var(--qs-spacing-base);
+    background: var(--qs-color-surface);
+    border-radius: var(--qs-radius-md);
+}
