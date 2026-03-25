@@ -17,3 +17,9 @@
         padding: var(--qs-spacing-base);
     }
 }
+
+@media (max-width: 320px) {
+    .content {
+        padding: var(--qs-spacing-sm);
+    }
+}

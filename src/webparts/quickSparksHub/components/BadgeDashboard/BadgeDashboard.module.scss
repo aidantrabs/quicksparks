@@ -60,6 +60,13 @@
     gap: var(--qs-spacing-base);
 }
 
+@media (min-width: 800px) {
+    .grid,
+    .skeletonGrid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    }
+}
+
 @media (max-width: 480px) {
     .grid,
     .skeletonGrid {
@@ -69,5 +76,9 @@
 
     .toolbar {
         flex-direction: column;
+    }
+
+    .searchInput {
+        min-width: 0;
     }
 }
