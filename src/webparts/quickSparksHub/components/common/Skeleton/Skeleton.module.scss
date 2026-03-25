@@ -1,0 +1,26 @@
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--qs-color-border) 25%,
+        #edf0f4 50%,
+        var(--qs-color-border) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--qs-radius-sm);
+}
+
+.skeletonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--qs-spacing-sm);
+}
