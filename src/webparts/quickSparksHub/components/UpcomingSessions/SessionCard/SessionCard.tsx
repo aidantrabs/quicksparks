@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ISession } from '../../../models/ISession';
+import { stripStudioPrefix } from '../../../utils/badgeUtils';
 import styles from './SessionCard.module.scss';
 
 const SHORT_MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
@@ -21,7 +22,7 @@ const SessionCard: React.FC<ISessionCardProps> = ({ session }) => {
             <div className={styles.body}>
                 <h3 className={styles.title}>{session.title}</h3>
                 <div className={styles.meta}>
-                    <span className={styles.studioPill}>{session.skillStudio}</span>
+                    <span className={styles.studioPill}>{stripStudioPrefix(session.skillStudio)}</span>
                     <span className={styles.categoryPill}>{session.category}</span>
                 </div>
             </div>

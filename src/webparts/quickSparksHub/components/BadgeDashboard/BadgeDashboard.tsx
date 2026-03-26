@@ -1,6 +1,11 @@
 import * as React from 'react';
 import { IUserBadge } from '../../models/IUserBadge';
-import { filterBadgesBySkillStudio, getUniqueSkillStudios, searchBadges } from '../../utils/badgeUtils';
+import {
+    filterBadgesBySkillStudio,
+    getUniqueSkillStudios,
+    searchBadges,
+    stripStudioPrefix,
+} from '../../utils/badgeUtils';
 import EmptyState from '../common/EmptyState/EmptyState';
 import Skeleton from '../common/Skeleton/Skeleton';
 import BadgeCard from './BadgeCard/BadgeCard';
@@ -55,7 +60,7 @@ const BadgeDashboard: React.FC<IBadgeDashboardProps> = ({ badges, loading, error
                     <option value="">all skill studios</option>
                     {studios.map((studio) => (
                         <option key={studio} value={studio}>
-                            {studio}
+                            {stripStudioPrefix(studio)}
                         </option>
                     ))}
                 </select>

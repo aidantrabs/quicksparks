@@ -5,13 +5,13 @@ import styles from './LeaderboardRow.module.scss';
 interface ILeaderboardRowProps {
     entry: ILeaderboardEntry;
     index: number;
-    maxPoints: number;
+    maxBadges: number;
 }
 
-const LeaderboardRow: React.FC<ILeaderboardRowProps> = ({ entry, index, maxPoints }) => {
+const LeaderboardRow: React.FC<ILeaderboardRowProps> = ({ entry, index, maxBadges }) => {
     const isTop3 = entry.rank <= 3;
     const delay = `${index * 50}ms`;
-    const barWidth = maxPoints > 0 ? Math.round((entry.totalPoints / maxPoints) * 100) : 0;
+    const barWidth = maxBadges > 0 ? Math.round((entry.totalBadges / maxBadges) * 100) : 0;
 
     return (
         <li className={styles.row} style={{ animationDelay: delay }}>
@@ -22,10 +22,7 @@ const LeaderboardRow: React.FC<ILeaderboardRowProps> = ({ entry, index, maxPoint
                     <div className={styles.barFill} style={{ width: `${barWidth}%` }} />
                 </div>
             </div>
-            <div className={styles.stats}>
-                <span className={styles.points}>{entry.totalPoints} pts</span>
-                <span className={styles.badges}>{entry.totalBadges} badges</span>
-            </div>
+            <span className={styles.badgeCount}>{entry.totalBadges} badges</span>
         </li>
     );
 };

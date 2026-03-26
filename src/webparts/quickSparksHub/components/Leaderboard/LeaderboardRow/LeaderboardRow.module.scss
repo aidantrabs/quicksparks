@@ -54,22 +54,12 @@
     transition: width var(--qs-transition-slow);
 }
 
-.stats {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+.badgeCount {
     min-width: 64px;
-}
-
-.points {
     font-size: var(--qs-font-size-body);
     font-weight: var(--qs-font-weight-bold);
     color: var(--qs-color-text-primary);
-}
-
-.badges {
-    font-size: var(--qs-font-size-caption);
-    color: var(--qs-color-text-muted);
+    text-align: right;
 }
 
 @keyframes fadeIn {

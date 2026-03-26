@@ -43,6 +43,10 @@ export function getTotalPoints(badges: IUserBadge[]): number {
     return total;
 }
 
+export function stripStudioPrefix(studio: string): string {
+    return studio.replace(/^\d+\.\d+\s+/, '');
+}
+
 export function getUniqueSkillStudios(badges: IUserBadge[]): string[] {
     const seen: Record<string, boolean> = {};
     const studios: string[] = [];

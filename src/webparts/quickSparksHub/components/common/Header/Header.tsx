@@ -5,11 +5,10 @@ interface IHeaderProps {
     displayName: string;
     badgesEarned: number;
     badgesTotal: number;
-    totalPoints: number;
     streak: number;
 }
 
-const Header: React.FC<IHeaderProps> = ({ displayName, badgesEarned, badgesTotal, totalPoints, streak }) => {
+const Header: React.FC<IHeaderProps> = ({ displayName, badgesEarned, badgesTotal, streak }) => {
     const firstName = displayName.split(' ')[0];
 
     return (
@@ -23,11 +22,7 @@ const Header: React.FC<IHeaderProps> = ({ displayName, badgesEarned, badgesTotal
                     <span className={styles.statLabel}>badges earned</span>
                 </div>
                 <div className={styles.stat}>
-                    <span className={styles.statValueAccent}>{totalPoints}</span>
-                    <span className={styles.statLabel}>total points</span>
-                </div>
-                <div className={styles.stat}>
-                    <span className={styles.statValue}>{streak}</span>
+                    <span className={styles.statValueAccent}>{streak}</span>
                     <span className={styles.statLabel}>session streak</span>
                 </div>
             </div>

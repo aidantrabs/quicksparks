@@ -1,6 +1,7 @@
 import * as React from 'react';
 import PlaceholderBadge from '../../../assets/PlaceholderBadge';
 import { IUserBadge } from '../../../models/IUserBadge';
+import { stripStudioPrefix } from '../../../utils/badgeUtils';
 import { formatDateShort } from '../../../utils/dateUtils';
 import styles from './BadgeCard.module.scss';
 
@@ -15,6 +16,8 @@ const TIER_COLORS: Record<string, string> = {
 };
 
 const BadgeCard: React.FC<IBadgeCardProps> = ({ badge }) => {
+    const studioName = stripStudioPrefix(badge.skillStudio);
+
     if (badge.tier === 'none') {
         return (
             <article className={styles.locked} aria-label={`${badge.title} - not yet earned`}>
@@ -23,7 +26,7 @@ const BadgeCard: React.FC<IBadgeCardProps> = ({ badge }) => {
                 </div>
                 <p className={styles.title}>{badge.title}</p>
                 <span className={styles.lockLabel}>locked</span>
-                <span className={styles.skillStudio}>{badge.skillStudio}</span>
+                <span className={styles.skillStudio}>{studioName}</span>
             </article>
         );
     }
@@ -47,8 +50,7 @@ const BadgeCard: React.FC<IBadgeCardProps> = ({ badge }) => {
             </span>
             <p className={styles.title}>{badge.title}</p>
             {badge.earnedDate && <span className={styles.date}>{formatDateShort(badge.earnedDate)}</span>}
-            <span className={styles.points}>{badge.points} pts</span>
-            <span className={styles.skillStudio}>{badge.skillStudio}</span>
+            <span className={styles.skillStudio}>{studioName}</span>
         </article>
     );
 };
