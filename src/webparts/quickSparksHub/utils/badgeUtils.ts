@@ -1,3 +1,4 @@
+import { getBadgeImageUrl } from '../config/badgeImages';
 import { IAttendance } from '../models/IAttendance';
 import { ISession } from '../models/ISession';
 import { IUserBadge } from '../models/IUserBadge';
@@ -22,7 +23,7 @@ export function deriveUserBadges(sessions: ISession[], attendance: IAttendance[]
             tier: record ? record.tier : 'none',
             points: record ? record.points : 0,
             earnedDate: record ? session.sessionDate : null,
-            badgeImageUrl: '',
+            badgeImageUrl: getBadgeImageUrl(session.trainingCode),
         };
     });
 }
