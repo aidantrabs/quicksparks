@@ -44,18 +44,26 @@ graph TD
 
 ```mermaid
 sequenceDiagram
-    participant SP as SharePoint Lists
-    participant SVC as DataService
-    participant Hook as React Hook
+    participant XL as Excel File<br/>(SharePoint)
+    participant Graph as Microsoft Graph API
+    participant Cache as DataCache
+    participant SVC as ExcelDataService
     participant Comp as Component
 
-    Comp->>Hook: mount / re-render
-    Hook->>SVC: getUserBadges(email)
-    SVC->>SP: @pnp/sp REST query
-    SP-->>SVC: list items
-    SVC-->>Hook: IUserBadge[]
-    Hook-->>Comp: { data, loading, error }
+    Comp->>SVC: getUserBadges(email)
+    SVC->>Cache: getParsedData()
+    alt cache miss
+        Cache->>Graph: GET /workbook/worksheets('Training Records')/usedRange
+        Graph->>XL: read file
+        XL-->>Graph: cell values
+        Graph-->>Cache: { values: string[][] }
+        Cache->>Cache: parse into ISession[] + IAttendance[]
+    end
+    Cache-->>SVC: { sessions, attendance }
+    SVC-->>Comp: IUserBadge[]
 ```
+
+The Excel file is fetched once via Graph API and cached for 5 minutes. All 4 concurrent service calls on page load share a single fetch through the cache's deduplication logic.
 
 ### Service Abstraction
 
@@ -79,23 +87,23 @@ classDiagram
         Static data for dev/demo
     }
 
-    class SharePointDataService {
-        @pnp/sp queries
+    class ExcelDataService {
+        Graph API + DataCache
     }
 
     class ServiceFactory {
-        +create(useMockData, context) IDataService
+        +create(useMockData, context, config) IDataService
     }
 
     IDataService <|.. MockDataService
-    IDataService <|.. SharePointDataService
+    IDataService <|.. ExcelDataService
     ServiceFactory --> IDataService
 ```
 
 `ServiceFactory` selects the implementation based on the `useMockData` web part property (toggle in the property pane).
 
 > [!TIP]
-> SharePoint column names are isolated in [`config/spFieldNames.ts`](../src/webparts/quickSparksHub/config/spFieldNames.ts). Changing a column name is a one-line edit  - no component or hook changes needed.
+> Excel column names are mapped in [`config/excelConfig.ts`](../src/webparts/quickSparksHub/config/excelConfig.ts). If L&TDC renames a column, update that file - no component or hook changes needed.
 
 ## Hooks
 
@@ -127,6 +135,7 @@ flowchart LR
 | Class-based root component | SPFx property pane integration requires class component lifecycle |
 | Functional child components + hooks | Simpler state management, easier testing |
 | CSS Modules over CSS-in-JS | SPFx native support, zero runtime cost |
-| PnPjs over raw REST | Type-safe queries, batching, caching built in |
+| Graph API over PnPjs Lists | Reads L&TDC's existing Excel directly - no SharePoint Lists to provision |
+| DataCache with deduplication | Single Graph API fetch shared across all concurrent service calls |
 | No external CDNs | Bank CSP blocks external resources; everything bundled in .sppkg |
-| Minimal dependencies | Only PnPjs at runtime  - reduces supply chain risk |
+| Minimal dependencies | PnPjs kept for legacy fallback; production path uses built-in SPFx Graph client |

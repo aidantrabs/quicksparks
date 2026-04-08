@@ -4,14 +4,14 @@ Technical overview of how QuickSparks Hub is secured. For reporting vulnerabilit
 
 ## Architecture
 
-QuickSparks Hub is a **read-only** web part. It displays data  - it never writes to SharePoint. Attendance records are written exclusively by Power Automate.
+QuickSparks Hub is a **read-only** web part. It reads L&TDC's training tracker Excel file from a SharePoint document library via the Microsoft Graph API. It never writes, modifies, or deletes any data.
 
 ```mermaid
 flowchart LR
     subgraph Microsoft 365 Tenant
-        SP[SharePoint Lists] -->|read-only via @pnp/sp| WP[QuickSparks Hub]
+        XL[Excel File<br/>in SharePoint] -->|read-only via Graph API| WP[QuickSparks Hub]
         WP -->|renders| Browser
-        PA[Power Automate] -->|writes| SP
+        LTDC[L&TDC] -->|maintains| XL
     end
 ```
 
@@ -34,12 +34,11 @@ No login screens, no custom OAuth, no token refresh logic.
 
 Minimum necessary permissions:
 
-| Permission | Scope | Purpose |
-|-----------|-------|---------|
-| `Sites.Read.All` | SharePoint | Read session and attendance lists |
-| `User.Read` | Microsoft Graph | Current user display name and email |
+| Permission | Type | Purpose |
+|-----------|------|---------|
+| `Files.Read.All` | Delegated | Read the training tracker Excel file from a SharePoint document library |
 
-Approved by a SharePoint Admin at `/_admin/ServicePrincipal`.
+This is a delegated permission - it runs as the logged-in employee and can only access files they already have SharePoint access to. Approved by a SharePoint Admin at `/_admin/ServicePrincipal`.
 
 ## Content Security Policy
 
@@ -58,14 +57,14 @@ SPFx enforces a strict CSP managed by SharePoint Online:
 | Type safety | Strict TypeScript (`noImplicitAny`, `strictNullChecks`, `strictFunctionTypes`) |
 | Linting | Biome with security rules enabled |
 | XSS prevention | React's built-in escaping for all rendered strings |
-| Data validation | All SharePoint responses type-validated before rendering |
+| Data validation | Excel column headers validated on parse; all data type-checked before rendering |
 | Secrets | No API keys, secrets, or tenant IDs in source code |
 
 ## Dependency Security
 
 | Control | Implementation |
 |---------|---------------|
-| Runtime deps | Minimal  - only `@pnp/sp`, `@pnp/logging`, `@pnp/queryable` |
+| Runtime deps | Minimal - production path uses built-in SPFx Graph client (zero additional runtime deps) |
 | Version pinning | Exact versions (no `^` or `~`) |
 | Audit | `npm audit` runs in CI on every PR |
 | CI supply chain | GitHub Actions pinned to commit SHAs |

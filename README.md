@@ -28,7 +28,7 @@ A lightweight platform built entirely on the M365 stack Republic Bank already li
 graph TD
     A[QuickSparksHubWebPart] --> B[ServiceFactory]
     B -->|useMockData: true| C[MockDataService]
-    B -->|useMockData: false| D[SharePointDataService]
+    B -->|useMockData: false| D[ExcelDataService]
     C --> E[IDataService Interface]
     D --> E
     E --> F[React Hooks]
@@ -51,7 +51,7 @@ graph TD
 | Framework | SPFx 1.20 |
 | UI | React 17, Fluent UI 8 |
 | Language | TypeScript 4.7 (strict mode) |
-| Data | @pnp/sp 4.18 |
+| Data | Microsoft Graph API (Excel workbook endpoint) |
 | Styling | SCSS Modules + CSS Custom Properties |
 | Linting | Biome 2.x |
 | CI/CD | GitHub Actions |
@@ -95,10 +95,13 @@ This opens the SharePoint Workbench at `https://localhost:4321` with mock data l
 
 1. Open the web part property pane (edit icon)
 2. Toggle **"Use mock data"** to **Off**
-3. The web part will query the SharePoint lists defined in [`config/spFieldNames.ts`](src/webparts/quickSparksHub/config/spFieldNames.ts)
+3. Fill in the **Excel File Location** fields:
+   - **SharePoint site URL** - the site where the Excel file lives
+   - **Document library name** - the library containing the file
+   - **Excel file name** - the exact file name including extension
 
 > [!WARNING]
-> Real data mode requires the SharePoint lists to be provisioned and API permissions approved. See [docs/deployment.md](docs/deployment.md).
+> Real data mode requires the `Files.Read.All` Graph API permission to be approved and the Excel file to be in a SharePoint document library. See [docs/deployment.md](docs/deployment.md).
 
 ### Build for Production
 
@@ -136,13 +139,16 @@ src/webparts/quickSparksHub/
 ├── services/
 │   ├── IDataService.ts                 # service contract
 │   ├── MockDataService.ts             # dev/demo data
-│   ├── SharePointDataService.ts       # real SharePoint queries
+│   ├── ExcelDataService.ts           # reads Excel via Graph API
+│   ├── GraphClientHelper.ts          # Graph API file resolution
+│   ├── DataCache.ts                  # in-memory cache with TTL
 │   └── ServiceFactory.ts             # routes mock ↔ real
 ├── models/                             # ISession, IAttendance, IEmployee, ILeaderboardEntry, IUserBadge
 ├── hooks/                              # useBadges, useSessions, useStreak, useLeaderboard
 ├── config/
 │   ├── theme.ts                        # design tokens
-│   └── spFieldNames.ts               # SharePoint column mappings
+│   ├── excelConfig.ts                 # Excel column mappings + file config
+│   └── spFieldNames.ts               # SharePoint column mappings (legacy)
 ├── utils/                              # dateUtils, badgeUtils, constants
 └── assets/
     ├── badges/                         # badge images (PNG)
@@ -153,34 +159,44 @@ src/webparts/quickSparksHub/
 
 ## Session Series
 
-Sessions belong to one of five series used for badge grouping and filtering:
+Sessions belong to one of 12 Skills Studios used for badge grouping and filtering:
 
-| Series | Example Sessions |
-|--------|-----------------|
-| From Numbers to Narrative | Liquidity Matters |
-| Courtesy Counts | Welcoming and Entertaining Guests/Clients |
-| Outside In; The Mindset That Changes Everything | Diagnosing the Drama, Turning My Job Outward |
-| The Conversation Catalyst | Beyond Words, Active Listening Mastery |
-| Byte-Sized Brilliance; Your Guide to Digital Empowerment | Excel-lence Unlocked |
+<details>
+<summary>Click to expand all 12 studios</summary>
+
+| Skills Studio | Example Sessions |
+|--------------|-----------------|
+| 1.0 The Conversation Catalyst | Say It So It Sticks, Beyond Words, Active Listening Mastery |
+| 2.0 Mind Over Maybes | The Power of Pause, Frame It Right |
+| 3.0 Outside In | Why Mindset Matters, Diagnosing the Drama, Turning My Job Outward |
+| 4.0 From Numbers to Narrative | Liquidity Matters |
+| 5.0 Byte-Sized Brilliance | Team Up With Teams, Excel-lence Unlocked |
+| 7.0 Think Risk, Act Right | Simplifying Compliance |
+| 8.0 Dollars Making Sense? | Taking Charge of Your Money |
+| 9.0 The Leader's Code | Unlocking Potential: The Heart of Coaching |
+| 10.0 Imagine That! | Solve, Create, Innovate |
+| 11.0 Courtesy Counts | Welcoming and Entertaining Guests/Clients |
+| 12.0 Everyday Wins | Car Basics & Maintenance |
+
+</details>
 
 ## How It Works
 
 ```mermaid
 flowchart LR
-    A[Teams Meetings] -->|attendance CSV| B[Power Automate]
-    B -->|writes| C[SharePoint Lists]
-    C -->|read-only| D[QuickSparks Hub]
-    D --> E[Employee sees badges,<br/>sessions, leaderboard]
+    A[L&TDC maintains<br/>Excel file] --> B[Excel file in<br/>SharePoint]
+    B -->|Graph API reads| C[QuickSparks Hub]
+    C --> D[Employee sees badges,<br/>sessions, leaderboard]
 ```
 
-Data never leaves the M365 tenant. Authentication is automatic via Azure AD  - employees are recognised the moment they open Teams. Attendance is captured by Power Automate from Teams meeting reports. The web part only reads data; it never writes.
+Data never leaves the M365 tenant. Authentication is automatic via Azure AD - employees are recognised the moment they open Teams. L&TDC maintains their existing Excel training tracker - the web part reads it directly via the Graph API. No data is copied, moved, or written.
 
 ## Documentation
 
 | Document | Description |
 |----------|-------------|
 | [Architecture](docs/architecture.md) | Component tree, data flow, service layer, theming |
-| [Deployment](docs/deployment.md) | SharePoint list setup, .sppkg deployment, Teams publishing |
+| [Deployment](docs/deployment.md) | .sppkg deployment, Excel file setup, Teams publishing |
 | [Security Model](docs/security-model.md) | Authentication, permissions, CSP, dependency security |
 | [Data Format](docs/data-format.md) | Excel structure guide for L&TDC (column rules, template) |
 | [Security Policy](SECURITY.md) | Reporting vulnerabilities |

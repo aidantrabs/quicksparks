@@ -4,70 +4,21 @@ Step-by-step guide for deploying QuickSparks Hub to SharePoint Online and Micros
 
 ## Prerequisites
 
-- SharePoint Admin access
-- Teams Admin access
-- Access to the App Catalog (`/sites/appcatalog`)
+- SharePoint Admin access (for App Catalog and API permissions)
+- Teams Admin access (for publishing the app)
+- L&TDC's training tracker Excel file stored in a SharePoint document library
 
-## 1. Provision SharePoint Lists
+## 1. Store the Excel File
 
-Create these two lists on the target site (e.g. `republicconnect`).
+L&TDC's training tracker Excel file needs to be in a SharePoint document library. It can be any library on any site that employees have read access to.
 
-### `quicksparkssessions`
+1. Upload the Excel file to a SharePoint document library (e.g. `Shared Documents` on the L&TDC site)
+2. Note the **site URL**, **library name**, and **file name** - you'll need these when configuring the web part
 
-| Column | Type | Notes |
-|--------|------|-------|
-| Title | Single line of text | Session name (built-in) |
-| SessionDate | Date and time | When the session was/will be held |
-| Description | Multiple lines of text | Plain text only |
-| BadgeImageUrl | Single line of text | URL to badge image in a document library |
-| Category | Choice | See [session series](../README.md#session-series) |
+> [!TIP]
+> See [data-format.md](data-format.md) for the expected Excel structure and a template file.
 
-### `quicksparksattendance`
-
-| Column | Type | Notes |
-|--------|------|-------|
-| Title | Single line of text | Auto-generated or blank |
-| SessionId | Lookup | Lookup → `quicksparkssessions` Title |
-| EmployeeEmail | Single line of text | Must match Azure AD UPN |
-| EmployeeName | Single line of text | Display name |
-| AttendedDate | Date and time | Date of attendance |
-| Division | Single line of text | Employee's division/branch |
-
-> [!NOTE]
-> Column names are mapped in [`config/spFieldNames.ts`](../src/webparts/quickSparksHub/config/spFieldNames.ts). If your list schema differs, update that file  - no code changes needed elsewhere.
-
-## 2. Migrate Excel Data
-
-L&TDC's attendance spreadsheet needs to be imported into the lists above.
-
-<details>
-<summary><b>Option A:</b> Manual import (small dataset)</summary>
-
-1. Open `quicksparkssessions` → **Add items from CSV** or create manually
-2. Export the attendance Excel sheet to CSV (match the list schema)
-3. Open `quicksparksattendance` → **Add items from CSV**
-
-</details>
-
-<details>
-<summary><b>Option B:</b> Power Automate (recommended)</summary>
-
-1. Create a flow: **Manually trigger a flow**
-2. **List rows present in a table** → point to the Excel file
-3. **For each** row → **Create item** in the target list
-4. Map Excel columns to list columns
-5. Run once to migrate historical data
-
-</details>
-
-## 3. Upload Badge Images
-
-1. Create a document library (e.g. `QuickSparksBadges`)
-2. Upload all badge PNGs
-3. Copy each image URL
-4. Set the `BadgeImageUrl` column in `quicksparkssessions`
-
-## 4. Deploy the .sppkg
+## 2. Deploy the .sppkg
 
 1. Download the latest `.sppkg` from [GitHub Releases](../../releases)
 2. Go to the App Catalog (`/sites/appcatalog/_layouts/15/tenantAppCatalog.aspx`)
@@ -76,60 +27,50 @@ L&TDC's attendance spreadsheet needs to be imported into the lists above.
    - Check **"Make this solution available to all sites in the organization"**
    - Click **Deploy**
 
-## 5. Approve API Permissions
+## 3. Approve API Permission
 
-Go to **SharePoint Admin Center → Advanced → API Access** (`/_admin/ServicePrincipal`).
+Go to **SharePoint Admin Center - Advanced - API Access** (`/_admin/ServicePrincipal`).
 
-Approve these pending requests:
+Approve the pending request:
 
-| Permission | Purpose |
-|-----------|---------|
-| `Sites.Read.All` | Read session and attendance list data |
-| `User.Read` | Current user identity (name, email) |
+| Permission | Type | Purpose |
+|-----------|------|---------|
+| `Files.Read.All` | Delegated | Read the training tracker Excel file via Graph API |
 
 > [!CAUTION]
-> The web part will show "Access Denied" errors until these permissions are approved.
+> The web part will show errors until this permission is approved.
 
-## 6. Add to a SharePoint Page
+> [!NOTE]
+> This is a delegated permission - it runs as the logged-in employee and can only access files they already have SharePoint access to. No service accounts or app registrations are needed.
 
-1. Navigate to the target page on RepublicConnect
-2. **Edit** the page
-3. Add the **QuickSparks Hub** web part
-4. In the property pane, set **"Use mock data"** to **Off**
+## 4. Configure the Web Part
+
+1. Add the **QuickSparks Hub** web part to a SharePoint page
+2. Open the property pane (edit icon)
+3. Set **"Use mock data"** to **Off**
+4. Fill in the **Excel File Location** fields:
+   - **SharePoint site URL** - e.g. `https://tenant.sharepoint.com/sites/LTDC`
+   - **Document library name** - e.g. `Shared Documents`
+   - **Excel file name** - e.g. `QuickSparks Training Tracker GTSD.xlsx`
 5. **Publish** the page
 
-## 7. Publish to Microsoft Teams
+## 5. Publish to Microsoft Teams
 
-**Option A:** In the App Catalog, select the app → **Sync to Teams**
+**Option A:** In the App Catalog, select the app - **Sync to Teams**
 
 **Option B:**
-1. Teams Admin Center → **Manage apps**
+1. Teams Admin Center - **Manage apps**
 2. Upload the Teams app package (included in the .sppkg)
 3. Pin the app via Teams App Setup Policy for target users
-
-## 8. Configure Power Automate (Ongoing Attendance)
-
-Set up a flow to capture Teams meeting attendance automatically:
-
-```mermaid
-flowchart LR
-    A[Meeting ends] --> B{Is QuickSparks session?}
-    B -->|Yes| C[For each attendee]
-    C --> D[Create item in<br/>quicksparksattendance]
-    D --> E[Map: email · name · date · division]
-```
-
-1. **Trigger:** When a meeting ends (Teams connector)
-2. **Filter:** Only QuickSparks sessions (by organizer or title pattern)
-3. **Action:** For each attendee → Create item in `quicksparksattendance`
-4. **Map:** attendee email, name, meeting date, division (from Azure AD profile)
 
 ## Troubleshooting
 
 | Issue | Resolution |
 |-------|-----------|
 | Web part not in toolbox | Verify .sppkg is deployed tenant-wide; refresh the page |
-| "Access Denied" errors | Approve API permissions in Admin Center (step 5) |
-| No data showing | Check list names match `spFieldNames.ts`; toggle mock data off |
-| Badge images broken | Verify URLs are accessible SharePoint document library links |
+| "Access Denied" errors | Approve `Files.Read.All` permission in Admin Center (step 3) |
+| No data showing | Verify the Excel file location in the property pane; ensure "Use mock data" is off |
+| "Could not find header row" error | The Excel file format doesn't match expectations. See [data-format.md](data-format.md) |
+| "Document library not found" error | The library name in the property pane doesn't match. The error message lists available libraries. |
+| "File not found" error | Check the exact file name (including extension) in the property pane |
 | Build fails locally | Run `nvm use` to ensure Node 18; delete `node_modules` and reinstall |
