@@ -182,5 +182,6 @@ Data never leaves the M365 tenant. Authentication is automatic via Azure AD  - e
 | [Architecture](docs/architecture.md) | Component tree, data flow, service layer, theming |
 | [Deployment](docs/deployment.md) | SharePoint list setup, .sppkg deployment, Teams publishing |
 | [Security Model](docs/security-model.md) | Authentication, permissions, CSP, dependency security |
+| [Data Format](docs/data-format.md) | Excel structure guide for L&TDC (column rules, template) |
 | [Security Policy](SECURITY.md) | Reporting vulnerabilities |
 | [Contributing](CONTRIBUTING.md) | Branch strategy, commits, PR process |
