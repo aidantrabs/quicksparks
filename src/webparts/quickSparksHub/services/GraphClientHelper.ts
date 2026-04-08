@@ -60,32 +60,30 @@ export class GraphClientHelper {
     }
 
     private async resolveDriveId(client: MSGraphClientV3, siteId: string, libraryName: string): Promise<string> {
-        const response = await client
-            .api(`/sites/${siteId}/drives`)
-            .version('v1.0')
-            .select('id,name')
-            .get();
+        const response = await client.api(`/sites/${siteId}/drives`).version('v1.0').select('id,name').get();
 
         const drives: { id: string; name: string }[] = response?.value || [];
-        const drive = drives.find((d) => d.name === libraryName);
+        let driveId = '';
+        const available: string[] = [];
+        for (let i = 0; i < drives.length; i++) {
+            available.push(drives[i].name);
+            if (drives[i].name === libraryName) {
+                driveId = drives[i].id;
+            }
+        }
 
-        if (!drive) {
-            const available = drives.map((d) => d.name).join(', ');
+        if (!driveId) {
             throw new Error(
-                `Document library "${libraryName}" not found. Available libraries: ${available}`,
+                `Document library "${libraryName}" not found. Available libraries: ${available.join(', ')}`,
             );
         }
 
-        return drive.id;
+        return driveId;
     }
 
     private async resolveFileItemId(client: MSGraphClientV3, driveId: string, fileName: string): Promise<string> {
         const encodedName = encodeURIComponent(fileName);
-        const response = await client
-            .api(`/drives/${driveId}/root:/${encodedName}`)
-            .version('v1.0')
-            .select('id')
-            .get();
+        const response = await client.api(`/drives/${driveId}/root:/${encodedName}`).version('v1.0').select('id').get();
 
         if (!response?.id) {
             throw new Error(`File "${fileName}" not found in the document library`);

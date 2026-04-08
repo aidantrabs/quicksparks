@@ -22,5 +22,3 @@ export const EXCEL_COLUMNS = {
     silver: 'SILVER',
     gold: 'GOLD',
 } as const;
-
-export const EXPECTED_HEADERS = Object.values(EXCEL_COLUMNS);

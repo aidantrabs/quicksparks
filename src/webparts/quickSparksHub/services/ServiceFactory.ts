@@ -1,13 +1,23 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
-import { SPFI } from '@pnp/sp';
+import { IExcelConfig } from '../config/excelConfig';
+import { ExcelDataService } from './ExcelDataService';
 import { IDataService } from './IDataService';
 import { MockDataService } from './MockDataService';
-import { SharePointDataService } from './SharePointDataService';
 
-export function createDataService(useMockData: boolean, sp: SPFI | null, context: WebPartContext | null): IDataService {
-    if (useMockData || !sp || !context) {
+export function createDataService(
+    useMockData: boolean,
+    context: WebPartContext | null,
+    excelConfig?: IExcelConfig,
+): IDataService {
+    if (useMockData || !context) {
         return new MockDataService();
     }
 
-    return new SharePointDataService(sp, context);
+    if (!excelConfig?.siteUrl || !excelConfig?.libraryName || !excelConfig?.fileName) {
+        throw new Error(
+            'Excel file location not configured. Open the web part property pane and set the site URL, library name, and file name.',
+        );
+    }
+
+    return new ExcelDataService(context, excelConfig);
 }

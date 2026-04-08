@@ -1,5 +1,8 @@
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { SPFI } from '@pnp/sp';
+import '@pnp/sp/webs';
+import '@pnp/sp/lists';
+import '@pnp/sp/items';
 import { SP_ATTENDANCE_FIELDS, SP_LISTS, SP_SESSION_FIELDS } from '../config/spFieldNames';
 import { IAttendance } from '../models/IAttendance';
 import { ILeaderboardEntry } from '../models/ILeaderboardEntry';

@@ -1,10 +1,10 @@
 import { Version } from '@microsoft/sp-core-library';
-import { type IPropertyPaneConfiguration, PropertyPaneTextField, PropertyPaneToggle } from '@microsoft/sp-property-pane';
+import {
+    type IPropertyPaneConfiguration,
+    PropertyPaneTextField,
+    PropertyPaneToggle,
+} from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import { SPFI, SPFx, spfi } from '@pnp/sp';
-import '@pnp/sp/webs';
-import '@pnp/sp/lists';
-import '@pnp/sp/items';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import QuickSparksHub from './components/QuickSparksHub';
@@ -20,11 +20,13 @@ export interface IQuickSparksHubWebPartProps {
 
 export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickSparksHubWebPartProps> {
     private _dataService: IDataService | null = null;
-    private _sp: SPFI | null = null;
 
     protected onInit(): Promise<void> {
-        this._sp = spfi().using(SPFx(this.context));
-        this._dataService = createDataService(this.properties.useMockData !== false, this._sp, this.context);
+        this._dataService = createDataService(this.properties.useMockData !== false, this.context, {
+            siteUrl: this.properties.excelSiteUrl || '',
+            libraryName: this.properties.excelLibraryName || '',
+            fileName: this.properties.excelFileName || '',
+        });
         return Promise.resolve();
     }
 

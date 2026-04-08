@@ -189,7 +189,11 @@ export class ExcelDataService implements IDataService {
             });
         }
 
-        const sessions = Object.values(sessionMap);
+        const sessions: ISession[] = [];
+        const sessionKeys = Object.keys(sessionMap);
+        for (let i = 0; i < sessionKeys.length; i++) {
+            sessions.push(sessionMap[sessionKeys[i]]);
+        }
         sessions.sort((a, b) => a.sessionDate.getTime() - b.sessionDate.getTime());
 
         return { sessions, attendance };
@@ -210,13 +214,14 @@ export class ExcelDataService implements IDataService {
         );
     }
 
-    private buildColumnIndex(
-        headers: string[],
-    ): Record<keyof typeof EXCEL_COLUMNS, number> {
+    private buildColumnIndex(headers: string[]): Record<keyof typeof EXCEL_COLUMNS, number> {
         const index: Record<string, number> = {};
 
-        for (const [key, expectedHeader] of Object.entries(EXCEL_COLUMNS)) {
-            const col = headers.findIndex((h) => h === expectedHeader);
+        const columnKeys = Object.keys(EXCEL_COLUMNS) as (keyof typeof EXCEL_COLUMNS)[];
+        for (let i = 0; i < columnKeys.length; i++) {
+            const key = columnKeys[i];
+            const expectedHeader = EXCEL_COLUMNS[key];
+            const col = headers.indexOf(expectedHeader);
             if (col === -1) {
                 throw new Error(
                     `Required column "${expectedHeader}" not found in the "${EXCEL_WORKSHEET}" sheet. ` +
@@ -244,7 +249,6 @@ export class ExcelDataService implements IDataService {
     }
 
     private parseDate(value: CellValue): Date {
-        if (value instanceof Date) return value;
         if (typeof value === 'number') {
             // Excel serial date number: days since 1899-12-30
             const excelEpoch = new Date(1899, 11, 30);
@@ -252,7 +256,8 @@ export class ExcelDataService implements IDataService {
         }
         if (typeof value === 'string' && value) {
             const parsed = new Date(value);
-            if (!Number.isNaN(parsed.getTime())) return parsed;
+            // biome-ignore lint/suspicious/noGlobalIsNan: Number.isNaN unavailable in ES5 target
+            if (!isNaN(parsed.getTime())) return parsed;
         }
         return new Date(0);
     }
