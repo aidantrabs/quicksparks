@@ -1,5 +1,5 @@
 import { Version } from '@microsoft/sp-core-library';
-import { type IPropertyPaneConfiguration, PropertyPaneToggle } from '@microsoft/sp-property-pane';
+import { type IPropertyPaneConfiguration, PropertyPaneTextField, PropertyPaneToggle } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { SPFI, SPFx, spfi } from '@pnp/sp';
 import '@pnp/sp/webs';
@@ -13,6 +13,9 @@ import { createDataService } from './services/ServiceFactory';
 
 export interface IQuickSparksHubWebPartProps {
     useMockData: boolean;
+    excelSiteUrl: string;
+    excelLibraryName: string;
+    excelFileName: string;
 }
 
 export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickSparksHubWebPartProps> {
@@ -59,7 +62,24 @@ export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickS
                                 PropertyPaneToggle('useMockData', {
                                     label: 'Use mock data',
                                     onText: 'Mock data',
-                                    offText: 'SharePoint data',
+                                    offText: 'Excel data',
+                                }),
+                            ],
+                        },
+                        {
+                            groupName: 'Excel File Location',
+                            groupFields: [
+                                PropertyPaneTextField('excelSiteUrl', {
+                                    label: 'SharePoint site URL',
+                                    description: 'e.g. https://tenant.sharepoint.com/sites/LTDC',
+                                }),
+                                PropertyPaneTextField('excelLibraryName', {
+                                    label: 'Document library name',
+                                    description: 'e.g. Shared Documents',
+                                }),
+                                PropertyPaneTextField('excelFileName', {
+                                    label: 'Excel file name',
+                                    description: 'e.g. QuickSparks Training Tracker.xlsx',
                                 }),
                             ],
                         },
