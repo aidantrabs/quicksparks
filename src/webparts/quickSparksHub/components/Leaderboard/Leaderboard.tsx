@@ -24,7 +24,12 @@ const Leaderboard: React.FC<ILeaderboardProps> = ({ entries, loading, error }) =
         return <EmptyState title="no leaderboard data" message="attendance data is needed to generate rankings" />;
     }
 
-    const maxBadges = entries.length > 0 ? entries[0].totalBadges : 1;
+    let maxBadges = 1;
+    for (let i = 0; i < entries.length; i++) {
+        if (entries[i].totalBadges > maxBadges) {
+            maxBadges = entries[i].totalBadges;
+        }
+    }
 
     return (
         <div className={styles.container}>
