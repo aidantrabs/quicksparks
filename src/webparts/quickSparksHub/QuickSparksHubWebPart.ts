@@ -8,6 +8,7 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import QuickSparksHub from './components/QuickSparksHub';
+import type { IExcelConfig } from './config/excelConfig';
 import { IDataService } from './services/IDataService';
 import { createDataService } from './services/ServiceFactory';
 
@@ -20,17 +21,49 @@ export interface IQuickSparksHubWebPartProps {
 
 export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickSparksHubWebPartProps> {
     private _dataService: IDataService | null = null;
+    private _initError: string | null = null;
 
     protected onInit(): Promise<void> {
-        this._dataService = createDataService(this.properties.useMockData !== false, this.context, {
-            siteUrl: this.properties.excelSiteUrl || '',
-            libraryName: this.properties.excelLibraryName || '',
-            fileName: this.properties.excelFileName || '',
-        });
+        this.initDataService();
         return Promise.resolve();
     }
 
+    protected onPropertyPaneFieldChanged(): void {
+        this.initDataService();
+        this.render();
+    }
+
+    private initDataService(): void {
+        try {
+            this._initError = null;
+            this._dataService = createDataService(
+                this.properties.useMockData === true,
+                this.context,
+                this.getExcelConfig(),
+            );
+        } catch (err) {
+            this._initError = err instanceof Error ? err.message : String(err);
+            this._dataService = null;
+            console.error('QuickSparksHub: failed to initialize data service', err);
+        }
+    }
+
+    private getExcelConfig(): IExcelConfig {
+        return {
+            siteUrl: this.properties.excelSiteUrl || '',
+            libraryName: this.properties.excelLibraryName || '',
+            fileName: this.properties.excelFileName || '',
+        };
+    }
+
     public render(): void {
+        if (this._initError) {
+            this.domElement.innerHTML = `<div style="padding:20px;color:#a80000;">
+                <strong>QuickSparks Hub configuration error:</strong><br/>${this._initError}
+            </div>`;
+            return;
+        }
+
         if (!this._dataService) {
             return;
         }
