@@ -9,7 +9,7 @@ interface IHeaderProps {
 }
 
 const Header: React.FC<IHeaderProps> = ({ displayName, badgesEarned, badgesTotal, streak }) => {
-    const firstName = displayName.split(' ')[0];
+    const firstName = displayName ? displayName.split(' ')[0] : 'there';
 
     return (
         <header className={styles.header}>
