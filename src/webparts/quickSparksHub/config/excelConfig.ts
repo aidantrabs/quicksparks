@@ -13,7 +13,7 @@ export const EXCEL_COLUMNS = {
     trainingCode: 'TRAINING CODE',
     sessionName: 'SESSION NAME',
     employeeNumber: 'EMPLOYEE NUMBER',
-    firstName: 'FIRST NAME ',
+    firstName: 'FIRST NAME',
     lastName: 'LAST NAME',
     email: 'EMAIL ADDRESS',
     branchUnit: 'BRANCH/UNIT',
