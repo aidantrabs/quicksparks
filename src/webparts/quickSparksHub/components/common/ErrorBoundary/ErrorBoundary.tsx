@@ -18,6 +18,10 @@ export default class ErrorBoundary extends React.Component<IErrorBoundaryProps, 
         return { hasError: true };
     }
 
+    public componentDidCatch(error: Error, info: React.ErrorInfo): void {
+        console.error('QuickSparksHub ErrorBoundary caught:', error, info.componentStack);
+    }
+
     public render(): React.ReactNode {
         if (this.state.hasError) {
             return (
