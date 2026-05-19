@@ -8,15 +8,13 @@ import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import * as React from 'react';
 import * as ReactDom from 'react-dom';
 import QuickSparksHub from './components/QuickSparksHub';
-import type { IExcelConfig } from './config/excelConfig';
+import type { IFlowConfig } from './config/flowConfig';
 import { IDataService } from './services/IDataService';
 import { createDataService } from './services/ServiceFactory';
 
 export interface IQuickSparksHubWebPartProps {
     useMockData: boolean;
-    excelSiteUrl: string;
-    excelLibraryName: string;
-    excelFileName: string;
+    flowUrl: string;
 }
 
 export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickSparksHubWebPartProps> {
@@ -39,7 +37,7 @@ export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickS
             this._dataService = createDataService(
                 this.properties.useMockData === true,
                 this.context,
-                this.getExcelConfig(),
+                this.getFlowConfig(),
             );
         } catch (err) {
             this._initError = err instanceof Error ? err.message : String(err);
@@ -48,11 +46,9 @@ export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickS
         }
     }
 
-    private getExcelConfig(): IExcelConfig {
+    private getFlowConfig(): IFlowConfig {
         return {
-            siteUrl: this.properties.excelSiteUrl || '',
-            libraryName: this.properties.excelLibraryName || '',
-            fileName: this.properties.excelFileName || '',
+            flowUrl: this.properties.flowUrl || '',
         };
     }
 
@@ -97,24 +93,18 @@ export default class QuickSparksHubWebPart extends BaseClientSideWebPart<IQuickS
                                 PropertyPaneToggle('useMockData', {
                                     label: 'Use mock data',
                                     onText: 'Mock data',
-                                    offText: 'Excel data',
+                                    offText: 'Live data',
                                 }),
                             ],
                         },
                         {
-                            groupName: 'Excel File Location',
+                            groupName: 'Power Automate Flow',
                             groupFields: [
-                                PropertyPaneTextField('excelSiteUrl', {
-                                    label: 'SharePoint site URL',
-                                    description: 'e.g. https://tenant.sharepoint.com/sites/LTDC',
-                                }),
-                                PropertyPaneTextField('excelLibraryName', {
-                                    label: 'Document library name',
-                                    description: 'e.g. Shared Documents',
-                                }),
-                                PropertyPaneTextField('excelFileName', {
-                                    label: 'Excel file name',
-                                    description: 'e.g. QuickSparks Training Tracker.xlsx',
+                                PropertyPaneTextField('flowUrl', {
+                                    label: 'Flow trigger URL',
+                                    description:
+                                        'Paste the HTTP trigger URL from the QuickSparks data flow in Power Automate.',
+                                    multiline: true,
                                 }),
                             ],
                         },
