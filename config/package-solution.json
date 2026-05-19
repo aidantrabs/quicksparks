@@ -9,8 +9,8 @@
     "isDomainIsolated": false,
     "webApiPermissionRequests": [
       {
-        "resource": "Microsoft Graph",
-        "scope": "Files.Read.All"
+        "resource": "Microsoft Flow Service",
+        "scope": "User"
       }
     ],
     "developer": {
