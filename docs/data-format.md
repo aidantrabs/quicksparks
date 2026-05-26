@@ -91,7 +91,7 @@ Each attendance row should have **at most one** of BRONZE, SILVER, or GOLD fille
 
 ```mermaid
 flowchart LR
-    A[Excel file in<br/>SharePoint] -->|Graph API reads<br/>Training Records sheet| B[QuickSparks Hub]
+    A[Excel file in<br/>SharePoint] -->|Power Automate flow<br/>lists table rows| B[QuickSparks Hub]
     B --> C[Badge Dashboard<br/><i>matches EMAIL ADDRESS<br/>to logged-in user</i>]
     B --> D[Leaderboard<br/><i>groups by BRANCH/UNIT<br/>filters by COUNTRY</i>]
     B --> E[Attendance Streak<br/><i>counts consecutive<br/>session dates per user</i>]

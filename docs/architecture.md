@@ -45,25 +45,25 @@ graph TD
 ```mermaid
 sequenceDiagram
     participant XL as Excel File<br/>(SharePoint)
-    participant Graph as Microsoft Graph API
+    participant Flow as Power Automate<br/>Flow
     participant Cache as DataCache
-    participant SVC as ExcelDataService
+    participant SVC as FlowDataService
     participant Comp as Component
 
     Comp->>SVC: getUserBadges(email)
     SVC->>Cache: getParsedData()
     alt cache miss
-        Cache->>Graph: GET /workbook/worksheets('Training Records')/usedRange
-        Graph->>XL: read file
-        XL-->>Graph: cell values
-        Graph-->>Cache: { values: string[][] }
+        Cache->>Flow: POST flowUrl<br/>(AAD token for service.flow.microsoft.com)
+        Flow->>XL: List rows present in a table
+        XL-->>Flow: row objects
+        Flow-->>Cache: { rows: Row[] }
         Cache->>Cache: parse into ISession[] + IAttendance[]
     end
     Cache-->>SVC: { sessions, attendance }
     SVC-->>Comp: IUserBadge[]
 ```
 
-The Excel file is fetched once via Graph API and cached for 5 minutes. All 4 concurrent service calls on page load share a single fetch through the cache's deduplication logic.
+The flow is invoked once and the parsed result is cached for 5 minutes. All 4 concurrent service calls on page load share a single flow invocation through the cache's deduplication logic.
 
 ### Service Abstraction
 
@@ -87,8 +87,8 @@ classDiagram
         Static data for dev/demo
     }
 
-    class ExcelDataService {
-        Graph API + DataCache
+    class FlowDataService {
+        Power Automate flow + DataCache
     }
 
     class ServiceFactory {
@@ -96,14 +96,14 @@ classDiagram
     }
 
     IDataService <|.. MockDataService
-    IDataService <|.. ExcelDataService
+    IDataService <|.. FlowDataService
     ServiceFactory --> IDataService
 ```
 
-`ServiceFactory` selects the implementation based on the `useMockData` web part property (toggle in the property pane).
+`ServiceFactory` selects the implementation based on the `useMockData` web part property (toggle in the property pane). When mock data is off, the factory requires a `flowUrl` and constructs a `FlowDataService`.
 
 > [!TIP]
-> Excel column names are mapped in [`config/excelConfig.ts`](../src/webparts/quickSparksHub/config/excelConfig.ts). If L&TDC renames a column, update that file - no component or hook changes needed.
+> Excel column names are mapped in [`config/flowConfig.ts`](../src/webparts/quickSparksHub/config/flowConfig.ts). If L&TDC renames a column, update that file - no component or hook changes needed.
 
 ## Hooks
 
@@ -135,7 +135,8 @@ flowchart LR
 | Class-based root component | SPFx property pane integration requires class component lifecycle |
 | Functional child components + hooks | Simpler state management, easier testing |
 | CSS Modules over CSS-in-JS | SPFx native support, zero runtime cost |
-| Graph API over PnPjs Lists | Reads L&TDC's existing Excel directly - no SharePoint Lists to provision |
-| DataCache with deduplication | Single Graph API fetch shared across all concurrent service calls |
+| Power Automate flow over direct Graph | Keeps the Graph/Excel permission inside the flow owner's connection; SPFx solution only needs `Microsoft Flow Service` |
+| AAD-authenticated HTTP trigger | "Any user in my tenant" trigger means SPFx tokens are validated by AAD; no shared secret in the URL signature alone |
+| DataCache with deduplication | Single flow invocation shared across all concurrent service calls |
 | No external CDNs | Bank CSP blocks external resources; everything bundled in .sppkg |
-| Minimal dependencies | PnPjs kept for legacy fallback; production path uses built-in SPFx Graph client |
+| Minimal dependencies | Production path uses built-in SPFx `AadHttpClient`; no runtime SDKs added |

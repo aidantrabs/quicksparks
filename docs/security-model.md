@@ -4,12 +4,13 @@ Technical overview of how QuickSparks Hub is secured. For reporting vulnerabilit
 
 ## Architecture
 
-QuickSparks Hub is a **read-only** web part. It reads L&TDC's training tracker Excel file from a SharePoint document library via the Microsoft Graph API. It never writes, modifies, or deletes any data.
+QuickSparks Hub is a **read-only** web part. It calls a Power Automate flow that reads L&TDC's training tracker Excel file from a SharePoint document library and returns the rows as JSON. The web part never writes, modifies, or deletes any data, and never touches the Excel file directly.
 
 ```mermaid
 flowchart LR
     subgraph Microsoft 365 Tenant
-        XL[Excel File<br/>in SharePoint] -->|read-only via Graph API| WP[QuickSparks Hub]
+        XL[Excel File<br/>in SharePoint] -->|read-only| Flow[Power Automate Flow]
+        Flow -->|JSON over HTTPS<br/>AAD-protected| WP[QuickSparks Hub]
         WP -->|renders| Browser
         LTDC[L&TDC] -->|maintains| XL
     end
@@ -36,9 +37,9 @@ Minimum necessary permissions:
 
 | Permission | Type | Purpose |
 |-----------|------|---------|
-| `Files.Read.All` | Delegated | Read the training tracker Excel file from a SharePoint document library |
+| `Microsoft Flow Service` | Delegated (User) | Call the Power Automate flow that returns training data |
 
-This is a delegated permission - it runs as the logged-in employee and can only access files they already have SharePoint access to. Approved by a SharePoint Admin at `/_admin/ServicePrincipal`.
+This is a delegated permission - the AAD token issued to the web part is bound to the signed-in employee, and the flow trigger is restricted to "Any user in my tenant" so anonymous callers (even with the URL) are rejected by AAD. The flow's Excel connector runs under the flow owner's credentials, so the SPFx solution never holds Graph or Files permissions directly. Approved by a SharePoint Admin at `/_admin/ServicePrincipal`.
 
 ## Content Security Policy
 
@@ -64,7 +65,7 @@ SPFx enforces a strict CSP managed by SharePoint Online:
 
 | Control | Implementation |
 |---------|---------------|
-| Runtime deps | Minimal - production path uses built-in SPFx Graph client (zero additional runtime deps) |
+| Runtime deps | Minimal - production path uses built-in SPFx `AadHttpClient` (zero additional runtime deps) |
 | Version pinning | Exact versions (no `^` or `~`) |
 | Audit | `npm audit` runs in CI on every PR |
 | CI supply chain | GitHub Actions pinned to commit SHAs |
