@@ -37,4 +37,4 @@ Out of scope:
 
 ## Security Model
 
-For details on how QuickSparks Hub is secured  - authentication, permissions, CSP, and dependency management  - see [docs/security-model.md](docs/security-model.md).
+For details on how QuickSparks Hub is secured - authentication, permissions, CSP, and dependency management - see [docs/security-model.md](docs/security-model.md).

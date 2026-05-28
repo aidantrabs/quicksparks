@@ -4,14 +4,14 @@ A central home for employee learning badges at Republic Bank.
 
 ## The Problem
 
-Employees attend QuickSparks workshops on Microsoft Teams and receive a badge via email afterwards  - but that's where the experience ends. Badges sit in individual inboxes. There's no way to see how many you've earned, which ones you're missing, or how your participation compares to peers.
+Employees attend QuickSparks workshops on Microsoft Teams and receive a badge via email afterwards - but that's where the experience ends. Badges sit in individual inboxes. There's no way to see how many you've earned, which ones you're missing, or how your participation compares to peers.
 
 ## The Solution
 
-A lightweight platform built entirely on the M365 stack Republic Bank already licenses  - no new infrastructure, no new vendors, no additional cost. Accessible two ways:
+A lightweight platform built entirely on the M365 stack Republic Bank already licenses - no new infrastructure, no new vendors, no additional cost. Accessible two ways:
 
-- **Teams personal app**  - pinned to every employee's sidebar, bank-wide
-- **RepublicConnect page**  - for those who prefer the intranet
+- **Teams personal app** - pinned to every employee's sidebar, bank-wide
+- **RepublicConnect page** - for those who prefer the intranet
 
 ## Features
 
@@ -67,7 +67,7 @@ graph TD
 | Gulp CLI | 4.x | `gulp -v` |
 
 > [!NOTE]
-> An `.nvmrc` is included  - run `nvm use` to switch to the correct Node version.
+> An `.nvmrc` is included - run `nvm use` to switch to the correct Node version.
 
 ### Setup
 
@@ -192,6 +192,7 @@ Data never leaves the M365 tenant. Authentication is automatic via Azure AD - em
 
 | Document | Description |
 |----------|-------------|
+| [IT Handoff](docs/handoff.md) | End-to-end production deployment for the SharePoint Admin |
 | [Architecture](docs/architecture.md) | Component tree, data flow, service layer, theming |
 | [Deployment](docs/deployment.md) | .sppkg deployment, Excel file setup, Teams publishing |
 | [Security Model](docs/security-model.md) | Authentication, permissions, CSP, dependency security |

@@ -27,7 +27,7 @@ flowchart LR
 | Token management | Handled by SharePoint runtime |
 | User identity | `this.context.pageContext.user` |
 | Custom auth flows | None |
-| Token storage | None  - no `localStorage`/`sessionStorage` for tokens |
+| Token storage | None - no `localStorage`/`sessionStorage` for tokens |
 
 No login screens, no custom OAuth, no token refresh logic.
 
@@ -46,7 +46,7 @@ This is a delegated permission - the AAD token issued to the web part is bound t
 SPFx enforces a strict CSP managed by SharePoint Online:
 
 - No `eval()` or `new Function()`
-- No external CDN dependencies  - everything bundled in `.sppkg`
+- No external CDN dependencies - everything bundled in `.sppkg`
 - No external font loading (Segoe UI available on all bank machines)
 - No `dangerouslySetInnerHTML` in React components
 - No inline script execution

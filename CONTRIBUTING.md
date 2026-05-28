@@ -27,7 +27,7 @@ gitGraph
 
 | Branch | Purpose |
 |--------|---------|
-| `main` | Production  - always deployable |
+| `main` | Production - always deployable |
 | `feat/*` | New features |
 | `fix/*` | Bug fixes |
 | `chore/*` | Tooling, deps, config |
@@ -69,7 +69,7 @@ chore(deps): update pnpjs to 4.19.0
 - [ ] No `any` types without justification
 - [ ] No secrets or hardcoded URLs
 - [ ] No external CDN dependencies
-- [ ] Accessible  - keyboard nav, alt text, contrast ratios
+- [ ] Accessible - keyboard nav, alt text, contrast ratios
 - [ ] Responsive at 320px, 375px, 800px, 1200px+
 - [ ] `npx biome check .` passes with zero errors
 
