@@ -52,7 +52,7 @@ The web part does not read the Excel file directly. Instead, it calls a Power Au
 
 ### Flow connection ownership and run-only users
 
-The flow's **Excel Online (Business)** connection must be owned by an account that has access to the private site holding the Excel file. Prefer a dedicated **service account**; falling back to a data team member's account works but breaks if that person leaves.
+The flow's **Excel Online (Business)** connection must be owned by an account that has access to the private site holding the Excel file - typically a data team member who maintains the tracker.
 
 After saving the flow, configure **Run only users** so end users can trigger it without needing direct Excel access:
 
