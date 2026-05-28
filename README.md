@@ -28,7 +28,7 @@ A lightweight platform built entirely on the M365 stack Republic Bank already li
 graph TD
     A[QuickSparksHubWebPart] --> B[ServiceFactory]
     B -->|useMockData: true| C[MockDataService]
-    B -->|useMockData: false| D[ExcelDataService]
+    B -->|useMockData: false| D[FlowDataService]
     C --> E[IDataService Interface]
     D --> E
     E --> F[React Hooks]
@@ -51,7 +51,7 @@ graph TD
 | Framework | SPFx 1.20 |
 | UI | React 17, Fluent UI 8 |
 | Language | TypeScript 4.7 (strict mode) |
-| Data | Microsoft Graph API (Excel workbook endpoint) |
+| Data | Power Automate flow (Excel Online connector) |
 | Styling | SCSS Modules + CSS Custom Properties |
 | Linting | Biome 2.x |
 | CI/CD | GitHub Actions |
@@ -95,13 +95,10 @@ This opens the SharePoint Workbench at `https://localhost:4321` with mock data l
 
 1. Open the web part property pane (edit icon)
 2. Toggle **"Use mock data"** to **Off**
-3. Fill in the **Excel File Location** fields:
-   - **SharePoint site URL** - the site where the Excel file lives
-   - **Document library name** - the library containing the file
-   - **Excel file name** - the exact file name including extension
+3. Paste the **Flow trigger URL** (the HTTP POST URL from the Power Automate flow's request trigger)
 
 > [!WARNING]
-> Real data mode requires the `Files.Read.All` Graph API permission to be approved and the Excel file to be in a SharePoint document library. See [docs/deployment.md](docs/deployment.md).
+> Real data mode requires the `Microsoft Flow Service` API permission to be approved by a SharePoint Admin, and the Power Automate flow must be deployed and its Excel Online connection authorised. See [docs/deployment.md](docs/deployment.md).
 
 ### Build for Production
 
@@ -139,15 +136,15 @@ src/webparts/quickSparksHub/
 ├── services/
 │   ├── IDataService.ts                 # service contract
 │   ├── MockDataService.ts             # dev/demo data
-│   ├── ExcelDataService.ts           # reads Excel via Graph API
-│   ├── GraphClientHelper.ts          # Graph API file resolution
+│   ├── FlowDataService.ts            # calls Power Automate flow + parses rows
+│   ├── SharePointDataService.ts      # SharePoint list fallback (legacy)
 │   ├── DataCache.ts                  # in-memory cache with TTL
 │   └── ServiceFactory.ts             # routes mock ↔ real
 ├── models/                             # ISession, IAttendance, IEmployee, ILeaderboardEntry, IUserBadge
 ├── hooks/                              # useBadges, useSessions, useStreak, useLeaderboard
 ├── config/
 │   ├── theme.ts                        # design tokens
-│   ├── excelConfig.ts                 # Excel column mappings + file config
+│   ├── flowConfig.ts                 # Flow URL config + column name mappings
 │   └── spFieldNames.ts               # SharePoint column mappings (legacy)
 ├── utils/                              # dateUtils, badgeUtils, constants
 └── assets/
@@ -184,12 +181,12 @@ Sessions belong to one of 12 Skills Studios used for badge grouping and filterin
 
 ```mermaid
 flowchart LR
-    A[L&TDC maintains<br/>Excel file] --> B[Excel file in<br/>SharePoint]
-    B -->|Graph API reads| C[QuickSparks Hub]
+    A[L&TDC maintains<br/>Excel file] --> B[Excel file in<br/>private SharePoint site]
+    B -->|Power Automate flow<br/>reads table| C[QuickSparks Hub]
     C --> D[Employee sees badges,<br/>sessions, leaderboard]
 ```
 
-Data never leaves the M365 tenant. Authentication is automatic via Azure AD - employees are recognised the moment they open Teams. L&TDC maintains their existing Excel training tracker - the web part reads it directly via the Graph API. No data is copied, moved, or written.
+Data never leaves the M365 tenant. Authentication is automatic via Azure AD - employees are recognised the moment they open Teams. L&TDC maintains their Excel training tracker in a private SharePoint site only the data team can access; the web part reads it indirectly through a Power Automate flow, so employees see their data without ever being granted access to the file. No data is copied, moved, or written.
 
 ## Documentation
 
